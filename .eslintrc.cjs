@@ -80,5 +80,9 @@ module.exports = {
         node: true,
       },
     },
+    {
+      files: ["*.d.ts"],
+      rules: { "@typescript-eslint/no-explicit-any": "off" },
+    },
   ],
 };

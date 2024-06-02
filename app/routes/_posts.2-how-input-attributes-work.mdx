@@ -1,0 +1,620 @@
+---
+title: Understanding Input Validity Attributes
+date: 2024-06-02
+meta:
+  - title: Title example from frontmatter
+  - name: description
+    content: Description example from frontmatter
+---
+
+export const excerpt = "hi";
+
+<style>
+  {`
+  .form-demo .touched input:invalid { border: 2px solid red; }
+  .form-demo .touched input:invalid:focus {
+    border-color: transparent;
+    outline-color: red;
+    outline-offset: 3px;
+  }
+`}
+</style>
+
+export function Example(props) {
+  return (
+    <div
+      className="form-demo"
+      style={{ border: "1px dotted", padding: 40, marginBlock: "1em" }}
+      {...props}
+    />
+  );
+}
+
+export function DemoForm(props) {
+  return (
+    <form
+      onSubmit={(event) => {
+        event.preventDefault();
+        event.currentTarget.classList.add("touched");
+      }}
+      onChange={(event) => {
+        event.currentTarget.classList.add("touched");
+      }}
+      style={{ display: "grid", gap: 8 }}
+      {...props}
+    />
+  );
+}
+
+export function ExampleForm() {
+  return (
+    <Example>
+      <DemoForm>
+        <input
+          style={{ width: "100%" }}
+          name="example"
+          required={true}
+          placeholder="try to submit empty input"
+        />
+        <button style={{ placeSelf: "start" }}>Click this</button>
+      </DemoForm>
+    </Example>
+  );
+}
+
+export function Input({ defaultCustomValidity, customValidity, ...props }) {
+  const customValidityRef = useRef(defaultCustomValidity);
+  const ref = useRef();
+  useEffect(() => {
+    const input = ref.current;
+    input.setCustomValidity(customValidityRef.current);
+  }, []);
+  useEffect(() => {
+    if (customValidity != null) {
+      const input = ref.current;
+      input.setCustomValidity(customValidity);
+    }
+  }, [customValidity]);
+  return <input ref={ref} {...props} />;
+}
+
+HTML Form inputs have some powerful validation mechanisms. For example, it's easy to disallow empty inputs by adding a [`required`](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/required) attribute. Beyond that, there is a bunch of other ways that you can add constraints to your input. Precisely, there are three ways to do it:
+
+- Using specific `type` attribute values, such as `"email"`, `"number"`, or `"url"`
+- Using other input attributes that create constraints, such as `"pattern"` or `"maxlength"`
+- Using the `setCustomValidity` DOM method of the input
+
+The last one is the most powerful of them all.
+
+I want to teach you how to use it.
+
+## Reimplementing the `required` attribute
+
+Let's learn this a bit unconventionally. Let's pretend that we are not allowed to use the `required` attribute, but we want to achieve the same behavior that it provides. How close can we get? How close will the browser APIs actually allow us to get?
+
+First, let's see how the actual `required` attribute works.
+
+The code is straighforward:
+
+```jsx
+function Form() {
+  return (
+    <form>
+      <input name="example" required={true} />
+      <button>Click this</button>
+    </form>
+  );
+}
+```
+
+And here's the form in action:
+
+<ExampleForm />
+
+_When the input is empty, the browser prevents you from submitting the form and shows a popover with an error message._
+
+That's exactly our goal!
+
+Now, let's remove the `required` attribute and think how we can reimplement it.
+
+## setCustomValidity()
+
+[`setCustomValidity()`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLObjectElement/setCustomValidity) is a powerful method that allows you to tap into the input's validity state.
+
+Let's explore how it works.
+
+Let's add an `onChange` handler to our input. In this handler, we will call `setCustomValidity`:
+
+```jsx {8}
+function Form() {
+  return (
+    <form>
+      <input
+        name="example"
+        onChange={(event) => {
+          const input = event.currentTarget;
+          input.setCustomValidity("Custom message: hello");
+        }}
+      />
+      <button>Click this</button>
+    </form>
+  );
+}
+```
+
+export function FormExample1() {
+  return (
+    <Example>
+      <DemoForm>
+        <input
+          style={{ width: "100%" }}
+          name="example"
+          placeholder="Type anything, then try to submit"
+          onChange={(event) => {
+            const input = event.currentTarget;
+            input.setCustomValidity("Custom message: hello");
+          }}
+        />
+        <button style={{ placeSelf: "start" }}>Click this</button>
+      </DemoForm>
+    </Example>
+  );
+}
+
+<FormExample1 />
+
+As you can see, our input becomes invalid forever as soon as you type anything. That is because we only ever set it as invalid and revert it back. To remove the custom constraint, we need to pass an empty string to the method, like this:
+
+```js
+input.setCustomValidity("");
+```
+
+So let's get closer to our goal: make empty input invalid when it's empty and valid otherwise.
+
+```jsx
+<input
+  name="example"
+  placeholder="..."
+  onChange={(event) => {
+    const input = event.currentTarget;
+    if (input.value === "") {
+      input.setCustomValidity("Custom message: input is empty");
+    } else {
+      input.setCustomValidity("");
+    }
+  }}
+/>
+```
+
+export function FormExample2() {
+  return (
+    <Example>
+      <DemoForm>
+        <input
+          style={{ width: "100%" }}
+          name="example"
+          placeholder="Type something, then erase it"
+          onChange={(event) => {
+            const input = event.currentTarget;
+            if (input.value === "") {
+              input.setCustomValidity("Custom message: input is empty");
+            } else {
+              input.setCustomValidity("");
+            }
+          }}
+        />
+        <button style={{ placeSelf: "start" }}>Click this</button>
+      </DemoForm>
+    </Example>
+  );
+}
+
+<FormExample2 />
+
+This almost works. If you type in some text, then remove it, the input will become invalid. You type something again and it becomes valid. There's just one obvious edge case: the input is in a valid state _initially_. Surely, before we ever touch the input, it's empty, and therefore must be invalid. But we only ever do something when the input value _changes_.
+
+So let's fix this. This is where the solution becomes less elegant, by the way (we'll address that later).
+
+```jsx {1,4-9}
+import { useRef, useLayoutEffect } from "react";
+
+function Form() {
+  const ref = useRef();
+  useLayoutEffect(() => {
+    // Make input invalid on initial render because it's empty
+    const input = ref.current;
+    input.setCustomValidity("Initial message: input is empty");
+  }, []);
+
+  return (
+    <form>
+      <input
+        ref={ref}
+        name="example"
+        onChange={(event) => {
+          const input = event.currentTarget;
+          if (input.value === "") {
+            input.setCustomValidity("Custom message: input is empty");
+          } else {
+            input.setCustomValidity("");
+          }
+        }}
+      />
+      <button>Click this</button>
+    </form>
+  );
+}
+```
+
+import { useRef, useEffect } from "react";
+
+export function FormExample3() {
+  const ref = useRef();
+  useEffect(() => {
+    const input = ref.current;
+    input.setCustomValidity("Initial message: input is empty");
+  }, []);
+  return (
+    <Example>
+      <DemoForm>
+        <input
+          ref={ref}
+          style={{ width: "100%" }}
+          name="example"
+          placeholder="Type something, then erase it"
+          onChange={(event) => {
+            const input = event.currentTarget;
+            if (input.value === "") {
+              input.setCustomValidity("Custom message: input is empty");
+            } else {
+              input.setCustomValidity("");
+            }
+          }}
+        />
+        <button style={{ placeSelf: "start" }}>Click this</button>
+      </DemoForm>
+    </Example>
+  );
+}
+
+<FormExample3 />
+
+Nicely done! Now we better understand both the behavior of the `required` attribute and the `.setCustomValidity` method.
+
+Let's proceed to the next challenge.
+
+## Reimplementing the `type="email"` attribute
+
+Once again, let's start with the reference demo:
+
+```jsx
+function Form() {
+  return (
+    <form>
+      <input type="email" />
+      <button>Click this</button>
+    </form>
+  );
+}
+```
+
+export function FormExample4() {
+  return (
+    <Example>
+      <DemoForm>
+        <input
+          type="email"
+          style={{ width: "100%" }}
+          name="email"
+          placeholder="only emails are allowed"
+        />
+        <button style={{ placeSelf: "start" }}>Click this</button>
+      </DemoForm>
+    </Example>
+  );
+}
+
+<FormExample4 />
+
+Now let's pretend once again that we're not allowed to use the `type="email"` attribute.
+Considering that are able to check if a given string is an email (oh, no! what a cursed idea), the solution is pretty straighforward:
+
+```jsx
+function isValidEmail(value) {
+  /** Any string with one "@" symbol is considered a valid email */
+  const emailRegexp = /^[^@\s]+@[^@\s]+$/; // Do not repeat this at home
+  return emailRegexp.test(value);
+}
+
+function Form({ defaultEmail }) {
+  const ref = useRef();
+  useLayoutEffect(() => {
+    const input = ref.current;
+    input.setCustomValidity(isValidEmail(defaultEmail));
+  }, []);
+
+  return (
+    <form>
+      <input
+        ref={ref}
+        defaultValue={defaultEmail}
+        onChange={(event) => {
+          const input = event.currentTarget;
+          input.setCustomValidity(isValidEmail(input.value));
+        }}
+      />
+    </form>
+  );
+}
+```
+
+I don't know, looks good to me. Let's see it in action:
+
+export function isValidEmail(value) {
+  /\*_ Any string with one "@" symbol is considered a valid email _/;
+  const emailRegexp = /^[^@\s]+@[^@\s]+$/; // Do not repeat this at home, please
+  return emailRegexp.test(value) ? "" : "Incorrect email";
+}
+
+export function FormExample5({ defaultEmail }) {
+  return (
+    <Example>
+      <DemoForm>
+        <Input
+          defaultCustomValidity={isValidEmail(defaultEmail)}
+          defaultValue={defaultEmail}
+          onChange={(event) => {
+            const input = event.currentTarget;
+            input.setCustomValidity(isValidEmail(input.value));
+          }}
+        />
+        <button style={{ placeSelf: "start" }}>Click this</button>
+      </DemoForm>
+    </Example>
+  );
+}
+
+<FormExample5 defaultEmail="not-an-email" />
+
+Perfect.
+
+## Refactoring
+
+Let's look at our clumsy way to validate the initial value:
+
+```js
+const ref = useRef();
+useLayoutEffect(() => {
+  const input = ref.current;
+  input.setCustomValidity(isValidEmail(input.value));
+}, []);
+```
+
+Ugh! Wouldn't want to write that one each time. Let's think what's wrong with this.
+
+- The validation logic is duplicated between the onChange handler and the initial render phase
+- The initial validation is not co-located with the input, so we're losing code cohesion. It's fragile: if you update validation logic, you might forget to update code in both places.
+- The `useRef` + `useLayouEffect` is just too much of a boilerplate to write, especially when a form has a lot of inputs. And it gets even more confusing if only some of those inputs use `customValidity`
+
+This is what happens when you deal with a purely imperative API in a declarative component.
+
+> Unlike validation attributes, `CustomValidity` is a purely imperative API. In other words, there's no input attribute that we can use to set custom validity.
+
+In fact, I would argue that this is **the main reason for poor adoption of native form validation**. If the API is cumbersome, sometimes it just does not matter how powerful it is.
+
+Can we solve this?
+
+### A `customValidity` prop
+
+Wouldn't it be so much nicer (and so much more _colocated_) to be able to pass the initial `customValidity` value directly to the input?
+
+```jsx
+<Input
+  defaultCustomValidity="Input is empty"
+  onChange={(event) => {
+    const input = event.currentTarget;
+    if (input.value === "") {
+      input.setCustomValidity("Input is empty");
+    } else {
+      input.setCustomValidity("");
+    }
+  }}
+/>
+```
+
+Looks beautiful to me. Let's implement this:
+
+```jsx
+function Input({ defaultCustomValidity, ...props }) {
+  const customValidityRef = useRef(defaultCustomValidity);
+  const ref = useRef();
+  useLayoutEffect(() => {
+    const input = ref.current;
+    input.setCustomValidity(customValidityRef.current);
+  }, []);
+  return <input ref={ref} {...props} />;
+}
+```
+
+Ok, not so bad. In fact, let's see how our previous example would benefit from this refactor:
+
+```jsx {12}
+function isValidEmail(value) {
+  /** Any string with one "@" symbol is considered a valid email */
+  const emailRegexp = /^[^@\s]+@[^@\s]+$/; // Do not repeat this at home
+  return emailRegexp.test(value);
+}
+
+function Form({ defaultEmail }) {
+  return (
+    <form>
+      <Input
+        defaultValue={defaultEmail}
+        defaultCustomValidity={isValidEmail(defaultEmail)}
+        onChange={(event) => {
+          const input = event.currentTarget;
+          input.setCustomValidity(isValidEmail(input.value));
+        }}
+      />
+    </form>
+  );
+}
+```
+
+Quite an improvement, don't you think?
+
+## Controlled and Uncontrolled
+
+As you may know, React has a concept of [controlled and uncontrolled](https://react.dev/reference/react-dom/components/input#controlling-an-input-with-a-state-variable) inputs. I won't go deep into explaining what those are, but I'll note that so far we have been using "uncontrolled" inputs. And that's why I named our attribute `defaultCustomValidity`: to convey that it's supposed to be used with "uncontrolled" inputs.
+
+This attribute is a good candidate to support both patterns. Let's update our input to support the "controlled" scenario:
+
+```jsx
+function Input({ defaultCustomValidity, customValidity, ...props }) {
+  // 1. "Controlled" case
+  useLayoutEffect(() => {
+    if (customValidity != null) {
+      const input = ref.current;
+      input.setCustomValidity(customValidityRef.current);
+    }
+  }, []);
+
+  // 2. "Uncontrolled" case
+  const customValidityRef = useRef(defaultCustomValidity);
+  const ref = useRef();
+  useLayoutEffect(() => {
+    const input = ref.current;
+    input.setCustomValidity(customValidityRef.current);
+  }, []);
+
+  return <input ref={ref} {...props} />;
+}
+```
+
+Even though I'm fond of using "uncontrolled" inputs as much as possible, see how concise our `"required"` and `"type=email"` solutions become if we use controlled inputs:
+
+```jsx {6,11}
+function Form({ nameValue, emailValue }) {
+  return (
+    <form>
+      <Input
+        name="name"
+        customValidity={nameValue ? "" : "Empty value"}
+        value={nameValue}
+      />
+      <Input
+        name="email"
+        customValidity={isValidEmail(emailValue) ? "" : "Invalid email"}
+        value={emailValue}
+      />
+      <button>Submit</button>
+    </form>
+  );
+}
+```
+
+## The Source of Power
+
+I hope I've been able to show you how good `setCustomValidity` method is. Even though we used it to mimic some built-in behaviors, the techniques demonstrate how it can cover validation needs of all kinds.
+
+But the real power comes from great APIs. And hopefully, you are now equipped with one of those, too.
+
+<details style={{ display: 'none', border: '1px solid var(--neutral-2)', padding: '1rem' }}>
+<summary>Bonus challenge: "url"</summary>
+## Reimplementing the `type="url"` attribute
+
+Same rules, same steps.
+
+Reference
+
+```jsx
+function Form() {
+  return (
+    <form>
+      <input type="url" />
+      <button>Click this</button>
+    </form>
+  );
+}
+```
+
+export function FormExample6() {
+  return (
+    <Example>
+      <DemoForm>
+        <input
+          style={{ width: "100%" }}
+          type="url"
+          name="url"
+          defaultValue="https://example.com"
+          placeholder="only URLs are allowed"
+        />
+        <button style={{ placeSelf: "start" }}>Click this</button>
+      </DemoForm>
+    </Example>
+  );
+}
+
+<FormExample6 />
+
+Here, the URL value must start with a protocol, e.g. `ftp://`.
+
+The solution is identical to our email example:
+
+```jsx
+export function isValidUrl(value) {
+  try {
+    new URL(value);
+    return "";
+  } catch {
+    return "Please enter a URL";
+  }
+}
+
+function Form({ defaultUrl }) {
+  return (
+    <form>
+      <Input
+        defaultCustomValidity={isValidUrl(defaultUrl)}
+        defaultValue={defaultUrl}
+        onChange={(event) => {
+          const input = event.currentTarget;
+          input.setCustomValidity(isValidUrl(input.value));
+        }}
+      />
+    </form>
+  );
+}
+```
+
+I don't know, looks good to me. Let's see it in action:
+
+export function isValidUrl(value) {
+  try {
+    new URL(value);
+    return "";
+  } catch {
+    return "Please enter a URL";
+  }
+}
+
+export function FormExample7({ defaultUrl }) {
+  return (
+    <Example>
+      <DemoForm>
+        <Input
+          defaultCustomValidity={isValidUrl(defaultUrl)}
+          defaultValue={defaultUrl}
+          onChange={(event) => {
+            const input = event.currentTarget;
+            input.setCustomValidity(isValidUrl(input.value));
+          }}
+        />
+        <button style={{ placeSelf: "start" }}>Click this</button>
+      </DemoForm>
+    </Example>
+  );
+}
+
+<FormExample7 defaultUrl="ftp://username" />
+</details>

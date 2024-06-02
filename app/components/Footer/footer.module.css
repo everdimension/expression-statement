@@ -1,0 +1,21 @@
+.hoverContent {
+  display: inline-block;
+  opacity: 0;
+  transform: scale(0.7);
+  transition: opacity 0ms, transform 120ms;
+}
+
+.visible .hoverContent {
+  transform: scale(1);
+  opacity: 1;
+}
+
+/* @media (hover: hover) { */
+/*   .hoverParent:hover .hoverContent { */
+/*     opacity: 1; */
+/*   } */
+/* } */
+/**/
+/* .hoverParent:focus .hoverContent { */
+/*   opacity: 1; */
+/* } */

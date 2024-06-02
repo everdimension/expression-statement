@@ -1,0 +1,27 @@
+.markdown h1,
+.markdown h2,
+.markdown h3,
+.markdown h4,
+.markdown h5,
+.markdown h6 {
+  margin-top: 2em;
+  margin-bottom: 1em;
+}
+
+.markdown p {
+  margin-block: 1.5rem;
+}
+
+.markdown blockquote {
+  margin: 3rem;
+}
+
+.markdown blockquote p {
+  background: var(--surface-1);
+  padding: 2rem;
+  border-radius: 10px;
+  font-weight: 400;
+  border-left: 4px solid var(--surface-2);
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}

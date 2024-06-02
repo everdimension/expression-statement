@@ -1,0 +1,14 @@
+.title {
+  /* fontSize: "6.5vw"; */
+  font-size: clamp(28px, 15vw, 9.5rem);
+  line-height: 0.8;
+  font-weight: 900;
+  letter-spacing: -1px;
+}
+
+@media (min-width: 30rem) {
+  .title {
+    /* font-size: clamp(50px, 16vw, 9.5rem); */
+    font-size: clamp(50px, 16vw, 5.5rem);
+  }
+}

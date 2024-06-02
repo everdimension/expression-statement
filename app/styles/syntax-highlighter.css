@@ -1,0 +1,44 @@
+figure[data-rehype-pretty-code-figure] {
+  margin: 0;
+}
+
+pre[data-language] {
+  padding-block: 1rem;
+  margin: 0 -1rem;
+  overflow-x: auto;
+  background-color: var(--shiki-light-bg);
+}
+
+pre [data-line] {
+  padding-inline: 1rem;
+}
+
+pre [data-highlighted-line] {
+  background-color: #8593cf45;
+}
+
+code[data-theme*=" "] span {
+  color: var(--shiki-light);
+  /* background-color: var(--shiki-light-bg); */
+}
+
+@media (prefers-color-scheme: dark) {
+  pre[data-language] {
+    background-color: var(--shiki-dark-bg);
+  }
+  pre[data-theme*="catppuccin"] {
+    background-color: #030303;
+  }
+
+  code[data-theme*=" "] span {
+    color: var(--shiki-dark);
+    /* background-color: var(--shiki-dark-bg); */
+  }
+}
+
+:not(pre) > code {
+  background: var(--surface-2);
+  padding: 3px 4px;
+  border-radius: 4px;
+  font-size: 0.85em;
+}

@@ -1,0 +1,70 @@
+---
+title: How searching for a blog platform led to me to rewrite my neovim config from scratch
+draft: true
+---
+
+export const excerpt =
+  "TL;DR: there is no rational reason. Just a consequence of a compulsive reality of constant search for perfect solutions in a world where there are none.";
+
+{excerpt}
+
+## <small>Prologue</small>
+
+I once read a wise thought that you should avoid at all costs trying to host your own blog and instead just start writing.
+
+I decided to follow this advice.
+
+I failed.
+
+## What happened
+
+- I asked myself: what blog platforms are out there?
+- [Medium](https://medium.com/). Once best platform for writers, it is no longer a respectful platform since they've put up a paywall for readers.
+- [DEV.to](https://dev.to/). Seems to hit all the spots, but what was the last time I read an article there? I couldn't remember. Thinking more, I did read an awesome article there by [Ryan Carniato](https://dev.to/ryansolid/a-hands-on-introduction-to-fine-grained-reactivity-3ndf). But I couldn't find it using the built-in dev.to search. The results showed an abundance of very spammy articles. I don't why that was the case, but it drew me away.
+- [Github pages](https://pages.github.com/). This is where things started steering in the wrong direction. Github actually offers hosting a blog with Jekyll using github pages. And they even have a tutorial: https://github.com/skills/github-pages
+
+So I decided to follow it.
+
+Did I ask myself why I was completing some tutorial steps in the terminal instead of actually writing a blog post? I did. Did that stop me? It didn't.
+
+So I finished the tutorial and noticed some inconsistency between what was happening and what the tutorial described. So I went to look if there was a github issue created. There was. So I read it. It doesn't matter now what it was. But someone commented there that github might've been using an older version of Jekyll.
+
+Oh no! Surely I _must_ be using the latest version for my blog.
+
+Obviously, I open the [Jekyll](https://jekyllrb.com/) documentation and try to install it. Seems to be as easy as
+
+```sh
+gem install bundler jekyll
+```
+
+Oops! It doesn't work. There seems to be a problem with my `brew` installment of Ruby. No problem, let me update it.
+
+Even more so, let me use this chance to check... all my outdated `brew` packages.
+
+Now what's this? The latest version of Neovim is 0.9 and I'm using 0.7. What if my friends found out I'm two versions late?
+
+```sh
+brew upgrade neovim
+```
+
+Ok, this basically breaks my whole existing config. I wasn't really surprised, the Neovim eco-system moves quick and lots of well established plugins have been either rewritten in lua, our got deprecated in favor of lua alternatives (lua is a nice programming language that can now be used to write neovim config instead of vimscript)
+
+I knew this would happen one day.
+
+I knew the wise decision would be to revert back to 0.7 and migrate gradually.
+
+I didn't do that.
+
+Instead, I spent to my weekend rushing through crash-courses on setting-up lua-based nvim configs from scratch, learning which new plugins are eco-system approved and why I need to use them, searching for discord neovim chats, and, in short, trying to recreate the workflow that I previously had.
+
+The nice thing about a thriving eco-system is that articles and tutorials written a year ago have a habit of becoming obsolete. Isn't this what we live for?
+
+Anyway, I'm not sure how (but thanks to [discord channels](https://discord.com/channels/701530051140780102/863276893059153971), [video tutorials](https://www.youtube.com/watch?v=w7i4amO_zaE) and [reddit threads](https://www.reddit.com/r/neovim/comments/14bsfz0/comment/joifovv/?utm_source=share&utm_medium=web2x&context=3)), but I managed to bring my editor back to a usable state and I even like it much better now.
+
+---
+
+What about the search for a blog platform? I did resolve the `ruby gem` issue, but found out that Jekyll uses SASS for styling. That's not cool anymore, so obviously I can't use that.
+
+Did my obsession with analyzing the options stop there? It did not. I went on to meticulously investigate how different platforms like [Write.as](https://write.as/), [Ghost](https://ghost.org/) and [Svtble](https://svbtle.com/) handle SEO, customization and code formatting.
+
+Why do I hate myself?

@@ -5,6 +5,13 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
+import type { LinksFunction } from "@remix-run/node";
+import stylesHref from "./styles/main.css?url";
+
+export const links: LinksFunction = () => [
+  { rel: "stylesheet", href: stylesHref },
+  { rel: "icon", href: "/logo-from-center.svg" },
+];
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (

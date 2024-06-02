@@ -1,0 +1,15 @@
+:where(html) {
+  --system-text-0: color-mix(in srgb, CanvasText 0%, Canvas);
+  --system-text-1: color-mix(in srgb, CanvasText 8%, Canvas);
+  --system-text-2: color-mix(in srgb, CanvasText 12%, Canvas);
+  --system-text-3: color-mix(in srgb, CanvasText 20%, Canvas);
+  --system-text-4: color-mix(in srgb, CanvasText 33%, Canvas);
+  --system-text-5: color-mix(in srgb, CanvasText 42%, Canvas);
+  --system-text-6: color-mix(in srgb, CanvasText 50%, Canvas);
+  --system-text-7: color-mix(in srgb, CanvasText 58%, Canvas);
+  --system-text-8: color-mix(in srgb, CanvasText 67%, Canvas);
+  --system-text-9: color-mix(in srgb, CanvasText 75%, Canvas);
+  --system-text-10: color-mix(in srgb, CanvasText 83%, Canvas);
+  --system-text-11: color-mix(in srgb, CanvasText 92%, Canvas);
+  --system-text-12: color-mix(in srgb, CanvasText 100%, Canvas);
+}
