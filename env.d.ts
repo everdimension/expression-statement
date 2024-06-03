@@ -7,7 +7,7 @@ declare module "*.mdx" {
     title?: string;
     description?: string;
     draft?: boolean;
-    meta?: Record<string, unknown>;
+    meta?: Record<string, unknown>[];
     date?: string;
   };
   export const frontmatter: undefined | FrontMatter;

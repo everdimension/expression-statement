@@ -1,11 +1,16 @@
 import { json, type MetaFunction } from "@remix-run/node";
 import fs from "node:fs/promises";
 import path from "path";
+import invariant from "tiny-invariant";
 import { Link, useLoaderData } from "@remix-run/react";
 import { Footer } from "~/components/Footer";
 import s from "../styles/styles.module.css";
 import type { FrontMatter } from "*.mdx";
-import invariant from "tiny-invariant";
+import {
+  type PostModule,
+  isPostModule,
+  getPostObject,
+} from "./_posts/shared/getPostObject";
 
 export const meta: MetaFunction = () => {
   return [
@@ -14,61 +19,37 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-type PostModule = { frontmatter: FrontMatter; excerpt?: string };
-
-function isPostModule(obj: object): obj is PostModule {
-  const hasFrontMatter = "frontmatter" in obj && Boolean(obj.frontmatter);
-  if (!hasFrontMatter) {
-    return false;
-  }
-  if ("excerpt" in obj === false) {
-    return true;
-  } else if (typeof obj.excerpt !== "string") {
-    throw new Error("{exceprt} export must be a string");
-  } else {
-    return true;
-  }
-}
-
 export async function loader() {
   const postModules: Record<string, { frontmatter?: FrontMatter }> =
     import.meta.glob("./_posts.*.mdx", { eager: true });
-  const data = Object.keys(postModules)
-    .reverse()
-    .map((key) => ({ pathname: key, post: postModules[key] }))
-    .filter((module): module is { pathname: string; post: PostModule } =>
-      isPostModule(module.post)
-    )
-    .filter(({ post }) => post.frontmatter.draft !== true)
-    .map(({ pathname, post }) => {
-      const slug = pathname.replace("./_posts.", "").replace(/\.mdx$/, "");
-      return {
-        pathname,
-        slug,
-        post,
-      };
-    });
 
-  const stats = await Promise.all(
-    data.map(async ({ pathname }) => {
+  const pathnames = Object.keys(postModules);
+  const filesStats = await Promise.all(
+    pathnames.map(async (pathname) => {
       const stats = await fs.stat(path.resolve(import.meta.dirname, pathname));
       return { pathname, stats };
     })
   );
   const statsMap = new Map(
-    stats.map(({ pathname, stats }) => [pathname, stats])
+    filesStats.map(({ pathname, stats }) => [pathname, stats])
   );
-  const posts = data.map(({ pathname, slug, post }) => {
-    const postFileStats = statsMap.get(pathname);
-    invariant(postFileStats, `File Stats not found for ${pathname}`);
-    return {
-      slug,
-      frontmatter: post.frontmatter,
-      excerpt: post.excerpt,
-      date: post.frontmatter.date || postFileStats.birthtimeMs,
-      modified: postFileStats.mtimeMs,
-    };
-  });
+  const posts = Object.keys(postModules)
+    .reverse()
+    .map((key) => ({ pathname: key, postModule: postModules[key] }))
+    .filter((value): value is { pathname: string; postModule: PostModule } =>
+      isPostModule(value.postModule)
+    )
+    .filter(({ postModule }) => postModule.frontmatter.draft !== true)
+    .map(({ pathname, postModule }) => {
+      const stats = statsMap.get(pathname);
+      invariant(stats, `File Stats not found for ${pathname}`);
+      return getPostObject({
+        pathname,
+        postModule,
+        stats,
+      });
+    });
+
   return json({ posts });
 }
 
@@ -90,7 +71,7 @@ export default function Index() {
           gap: "1rem",
         }}
       >
-        <h3 className={s.title}>
+        <h1 className={s.title}>
           Expression
           {ONELINE_TITLE ? (
             <span> Statement</span>
@@ -100,7 +81,7 @@ export default function Index() {
               <span style={{ fontSize: "1.081em" }}>Statement</span>
             </>
           )}
-        </h3>
+        </h1>
         <div style={{ color: "var(--neutral-6)" }}>{subtitle}</div>
       </div>
 
