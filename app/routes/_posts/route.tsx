@@ -4,15 +4,13 @@ import fs from "node:fs/promises";
 import path from "path";
 import { Article } from "./Article";
 import { Footer } from "~/components/Footer";
-import { getPostObject, type PostModule } from "./shared/getPostObject";
+import { PostModuleSchema, getPostObject } from "./shared/getPostObject";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const slug = new URL(request.url).pathname.slice(1);
   const pathname = `../_posts.${slug}.mdx`;
-  const postModule: PostModule | undefined = await import(pathname);
-  if (!postModule) {
-    throw new Error("post not found");
-  }
+  const mdxModule = await import(`../_posts.${slug}.mdx`); // string literal for vite
+  const postModule = PostModuleSchema.parse(mdxModule);
   const stats = await fs.stat(path.resolve(import.meta.dirname, pathname));
   return json(getPostObject({ pathname, postModule, stats }));
 }
@@ -48,14 +46,16 @@ export default function Post() {
       </nav>
       <main className="column">
         <Article>
-          <h1>{title}</h1>
-          <time style={{ color: "var(--neutral-5)", fontSize: "0.8em" }}>
-            {new Intl.DateTimeFormat("en", {
-              month: "long",
-              day: "numeric",
-              year: "numeric",
-            }).format(new Date(date))}
-          </time>
+          <div style={{ marginBottom: "2em" }}>
+            <h1 style={{ marginBottom: 0, fontSize: "3em" }}>{title}</h1>
+            <time style={{ color: "var(--neutral-5)", fontSize: "0.8em" }}>
+              {new Intl.DateTimeFormat("en", {
+                month: "long",
+                day: "numeric",
+                year: "numeric",
+              }).format(new Date(date))}
+            </time>
+          </div>
           <Outlet />
         </Article>
         <div style={{ height: "2rem" }}></div>

@@ -1,16 +1,12 @@
 import { json, type MetaFunction } from "@remix-run/node";
+import { z } from "zod";
 import fs from "node:fs/promises";
 import path from "path";
 import invariant from "tiny-invariant";
 import { Link, useLoaderData } from "@remix-run/react";
 import { Footer } from "~/components/Footer";
 import s from "../styles/styles.module.css";
-import type { FrontMatter } from "*.mdx";
-import {
-  type PostModule,
-  isPostModule,
-  getPostObject,
-} from "./_posts/shared/getPostObject";
+import { getPostObject, PostModuleSchema } from "./_posts/shared/getPostObject";
 
 export const meta: MetaFunction = () => {
   return [
@@ -20,8 +16,9 @@ export const meta: MetaFunction = () => {
 };
 
 export async function loader() {
-  const postModules: Record<string, { frontmatter?: FrontMatter }> =
-    import.meta.glob("./_posts.*.mdx", { eager: true });
+  const mdxModules = import.meta.glob("./_posts.*.mdx", { eager: true });
+  const postModules = z.record(z.string(), PostModuleSchema).parse(mdxModules);
+  console.log({ postModules });
 
   const pathnames = Object.keys(postModules);
   const filesStats = await Promise.all(
@@ -36,9 +33,6 @@ export async function loader() {
   const posts = Object.keys(postModules)
     .reverse()
     .map((key) => ({ pathname: key, postModule: postModules[key] }))
-    .filter((value): value is { pathname: string; postModule: PostModule } =>
-      isPostModule(value.postModule)
-    )
     .filter(({ postModule }) => postModule.frontmatter.draft !== true)
     .map(({ pathname, postModule }) => {
       const stats = statsMap.get(pathname);
@@ -60,6 +54,7 @@ const subtitle = "Software, UX Design and the Web";
 
 export default function Index() {
   const { posts } = useLoaderData<typeof loader>();
+  console.log({ posts });
   return (
     <div className="column">
       <div

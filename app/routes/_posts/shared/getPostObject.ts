@@ -1,24 +1,12 @@
 import type { Stats } from "fs";
-import type { FrontMatter } from "*.mdx";
+import { z } from "zod";
+import { FrontMatterSchema } from "~/types/mdx-types";
 
-export interface PostModule {
-  frontmatter: FrontMatter;
-  excerpt?: string;
-}
-
-export function isPostModule(obj: object): obj is PostModule {
-  const hasFrontMatter = "frontmatter" in obj && Boolean(obj.frontmatter);
-  if (!hasFrontMatter) {
-    return false;
-  }
-  if ("excerpt" in obj === false) {
-    return true;
-  } else if (typeof obj.excerpt !== "string") {
-    throw new Error("{exceprt} export must be a string");
-  } else {
-    return true;
-  }
-}
+export const PostModuleSchema = z.object({
+  frontmatter: FrontMatterSchema,
+  excerpt: z.string().optional(),
+});
+export type PostModule = z.infer<typeof PostModuleSchema>;
 
 export function getPostObject({
   pathname,
