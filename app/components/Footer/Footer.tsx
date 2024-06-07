@@ -1,10 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import s from "./footer.module.css";
+import { Link } from "@remix-run/react";
 
-function useNow() {
+function useNow(enabled: boolean) {
   const [now, setNow] = useState(() => new Date());
 
   useEffect(() => {
+    if (!enabled) {
+      return;
+    }
     let id = 0;
     function update() {
       setNow(new Date());
@@ -14,19 +18,19 @@ function useNow() {
     return () => {
       cancelAnimationFrame(id);
     };
-  }, []);
+  }, [enabled]);
   return now;
 }
 
 function Today() {
-  const now = useNow();
+  const [show, setShow] = useState(false);
+  const now = useNow(show);
   const year = String(now.getFullYear());
   const [displayFullDate, setDisplayFullDate] = useState(false);
   useEffect(() => {
     // Client only to avoid hydration mismatch
     setDisplayFullDate(true);
   }, []);
-  const [show, setShow] = useState(false);
   const ref = useRef<HTMLSpanElement | null>(null);
   useEffect(() => {
     if (show) {
@@ -99,7 +103,14 @@ export function Footer() {
         fontWeight: 800,
       }}
     >
-      Expression Statement, <Today />
+      <div style={{ float: "right" /* Yea! Challenge: guess why. */ }}>
+        <Link to="/about" style={{ color: "var(--link)" }}>
+          About
+        </Link>
+      </div>
+      <div>
+        Expression Statement, <Today />
+      </div>
     </footer>
   );
 }
