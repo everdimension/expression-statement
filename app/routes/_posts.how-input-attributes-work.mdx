@@ -11,11 +11,68 @@ export const excerpt = "hi";
 
 <style>
   {`
-  .form-demo .touched input:invalid { border: 2px solid red; }
+  .form-demo, .form-demo input {
+    font-family: monospace;
+  }
+  .form-demo button {
+    background-color: var(--indigo-5);
+    padding: .5em 1em;
+    color: var(--white);
+    border: none;
+  }
+  .form-demo input {
+    --normal-color: var(--neutral-3);
+    --invalid-color: #f06;
+    --border-color: var(--normal-color);
+    padding: 10px;
+    border: 2px solid var(--border-color);
+    border-radius: 0;
+    outline: none;
+    background-color: Canvas;
+    -webkit-appearance: none;
+  }
+  .form-demo input:focus {
+    outline: 2px solid var(--link);
+    outline-offset: 2px;
+  }
+  .form-demo .touched input:invalid {
+    --border-color: var(--invalid-color);
+    outline-color: var(--invalid-color);
+  }
   .form-demo .touched input:invalid:focus {
-    border-color: transparent;
-    outline-color: red;
-    outline-offset: 3px;
+    outline: 2px solid #f06;
+    outline-offset: 2px;
+    --border-color: var(--normal-color);
+  }
+  .form-demo .submitted input {
+    --border-color: var(--green-4);
+  }
+  .form-demo {
+    padding: 20px;
+  }
+  .form-demo input {
+    font-size: 16px;
+  }
+  @media (min-width: 640px) {
+    .form-demo input {
+      font-size: 1em;
+    }
+    .form-demo {
+      padding: 40px;
+    }
+  }
+
+  .form-demo .unstyled-button {
+    padding: 0;
+    margin: 0;
+    border: none;
+    background: transparent;
+    outline-offset: 2px;
+    color: currentColor;
+    font-size: inherit;
+    font-weight: inherit;
+    font-family: inherit;
+    line-height: inherit;
   }
 `}
 </style>
@@ -24,7 +81,10 @@ export function Example(props) {
   return (
     <div
       className="form-demo"
-      style={{ border: "1px dotted", padding: 40, marginBlock: "1em" }}
+      style={{
+        border: "1px dashed var(--neutral-3)",
+        marginBlock: "1em",
+      }}
       {...props}
     />
   );
@@ -36,13 +96,35 @@ export function DemoForm(props) {
       onSubmit={(event) => {
         event.preventDefault();
         event.currentTarget.classList.add("touched");
+        event.currentTarget.classList.add("submitted");
       }}
       onChange={(event) => {
         event.currentTarget.classList.add("touched");
+        event.currentTarget.classList.remove("submitted");
       }}
-      style={{ display: "grid", gap: 8 }}
+      style={{ display: "grid", gap: 12 }}
       {...props}
     />
+  );
+}
+
+export function FormSubmitRow() {
+  return (
+    <div style={{ display: "flex", alignItems: "baseline", gap: 20 }}>
+      <button>Submit</button>
+      <button
+        className="unstyled-button hover:underline"
+        type="button"
+        style={{ color: "var(--system-text-5)" }}
+        onClick={(event) => {
+          event.currentTarget.form.reset();
+          event.currentTarget.form.classList.remove("touched");
+          event.currentTarget.form.classList.remove("submitted");
+        }}
+      >
+        Reset
+      </button>
+    </div>
   );
 }
 
@@ -56,7 +138,7 @@ export function ExampleForm() {
           required={true}
           placeholder="try to submit empty input"
         />
-        <button style={{ placeSelf: "start" }}>Click this</button>
+        <FormSubmitRow />
       </DemoForm>
     </Example>
   );
@@ -101,7 +183,7 @@ function Form() {
   return (
     <form>
       <input name="example" required={true} />
-      <button>Click this</button>
+      <button>Submit</button>
     </form>
   );
 }
@@ -136,7 +218,7 @@ function Form() {
           input.setCustomValidity("Custom message: hello");
         }}
       />
-      <button>Click this</button>
+      <button>Submit</button>
     </form>
   );
 }
@@ -155,7 +237,7 @@ export function FormExample1() {
             input.setCustomValidity("Custom message: hello");
           }}
         />
-        <button style={{ placeSelf: "start" }}>Click this</button>
+        <FormSubmitRow />
       </DemoForm>
     </Example>
   );
@@ -203,7 +285,7 @@ export function FormExample2() {
             }
           }}
         />
-        <button style={{ placeSelf: "start" }}>Click this</button>
+        <FormSubmitRow />
       </DemoForm>
     </Example>
   );
@@ -240,7 +322,7 @@ function Form() {
           }
         }}
       />
-      <button>Click this</button>
+      <button>Submit</button>
     </form>
   );
 }
@@ -271,7 +353,7 @@ export function FormExample3() {
             }
           }}
         />
-        <button style={{ placeSelf: "start" }}>Click this</button>
+        <FormSubmitRow />
       </DemoForm>
     </Example>
   );
@@ -292,7 +374,7 @@ function Form() {
   return (
     <form>
       <input type="email" />
-      <button>Click this</button>
+      <button>Submit</button>
     </form>
   );
 }
@@ -308,7 +390,7 @@ export function FormExample4() {
           name="email"
           placeholder="only emails are allowed"
         />
-        <button style={{ placeSelf: "start" }}>Click this</button>
+        <FormSubmitRow />
       </DemoForm>
     </Example>
   );
@@ -368,7 +450,7 @@ export function FormExample5({ defaultEmail }) {
             input.setCustomValidity(isValidEmail(input.value));
           }}
         />
-        <button style={{ placeSelf: "start" }}>Click this</button>
+        <FormSubmitRow />
       </DemoForm>
     </Example>
   );
@@ -532,7 +614,7 @@ function Form() {
   return (
     <form>
       <input type="url" />
-      <button>Click this</button>
+      <button>Submit</button>
     </form>
   );
 }
@@ -549,7 +631,7 @@ export function FormExample6() {
           defaultValue="https://example.com"
           placeholder="only URLs are allowed"
         />
-        <button style={{ placeSelf: "start" }}>Click this</button>
+        <FormSubmitRow />
       </DemoForm>
     </Example>
   );
@@ -610,7 +692,7 @@ export function FormExample7({ defaultUrl }) {
             input.setCustomValidity(isValidUrl(input.value));
           }}
         />
-        <button style={{ placeSelf: "start" }}>Click this</button>
+        <FormSubmitRow />
       </DemoForm>
     </Example>
   );

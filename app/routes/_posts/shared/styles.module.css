@@ -1,0 +1,5 @@
+@media (min-width: 60ch) {
+  .postTitle {
+    font-size: 3em;
+  }
+}
