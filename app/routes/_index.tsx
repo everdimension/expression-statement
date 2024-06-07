@@ -4,7 +4,7 @@ import fs from "node:fs/promises";
 import path from "path";
 import invariant from "tiny-invariant";
 import { Link, useLoaderData } from "@remix-run/react";
-import { Footer } from "~/components/Footer";
+import { Layout } from "~/components/Layout";
 import s from "../styles/styles.module.css";
 import { getPostObject, PostModuleSchema } from "./_posts/shared/getPostObject";
 
@@ -56,7 +56,7 @@ export default function Index() {
   const { posts } = useLoaderData<typeof loader>();
   console.log({ posts });
   return (
-    <div className="column">
+    <Layout>
       <div
         style={{
           paddingBlock: "2rem",
@@ -118,9 +118,7 @@ export default function Index() {
             </article>
           ))}
         </div>
-        <div style={{ height: "3rem" }}></div>
       </main>
-      <Footer />
-    </div>
+    </Layout>
   );
 }

@@ -5,6 +5,8 @@ import path from "path";
 import { Article } from "./Article";
 import { Footer } from "~/components/Footer";
 import { PostModuleSchema, getPostObject } from "./shared/getPostObject";
+import { Layout } from "~/components/Layout";
+import s from "./shared/styles.module.css";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const slug = new URL(request.url).pathname.slice(1);
@@ -25,8 +27,8 @@ export default function Post() {
     date,
   } = useLoaderData<typeof loader>();
   return (
-    <>
-      <nav className="column">
+    <Layout>
+      <nav>
         <div
           style={{
             paddingBlock: "2rem",
@@ -44,10 +46,12 @@ export default function Post() {
           </Link>
         </div>
       </nav>
-      <main className="column">
+      <main>
         <Article>
           <div style={{ marginBottom: "2em" }}>
-            <h1 style={{ marginBottom: 0, fontSize: "3em" }}>{title}</h1>
+            <h1 style={{ marginBottom: 0 }} className={s.postTitle}>
+              {title}
+            </h1>
             <time style={{ color: "var(--neutral-5)", fontSize: "0.8em" }}>
               {new Intl.DateTimeFormat("en", {
                 month: "long",
@@ -58,9 +62,7 @@ export default function Post() {
           </div>
           <Outlet />
         </Article>
-        <div style={{ height: "2rem" }}></div>
-        <Footer />
       </main>
-    </>
+    </Layout>
   );
 }
