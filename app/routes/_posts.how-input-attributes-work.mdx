@@ -1,5 +1,5 @@
 ---
-title: Understanding Input Validity Attributes
+title: You are not using Custom Validity
 date: 2024-06-02
 meta:
   - title: Title example from frontmatter
@@ -35,11 +35,11 @@ export const excerpt = "hi";
     outline: 2px solid var(--link);
     outline-offset: 2px;
   }
-  .form-demo .touched input:invalid {
+  .form-demo :is(.touched, .submitted) input:invalid {
     --border-color: var(--invalid-color);
     outline-color: var(--invalid-color);
   }
-  .form-demo .touched input:invalid:focus {
+  .form-demo :is(.touched, .submitted) input:invalid:focus {
     outline: 2px solid #f06;
     outline-offset: 2px;
     --border-color: var(--normal-color);
@@ -90,7 +90,7 @@ export function Example(props) {
   );
 }
 
-export function DemoForm(props) {
+export function DemoForm({ gap = 12, ...props }) {
   return (
     <form
       onSubmit={(event) => {
@@ -102,7 +102,7 @@ export function DemoForm(props) {
         event.currentTarget.classList.add("touched");
         event.currentTarget.classList.remove("submitted");
       }}
-      style={{ display: "grid", gap: 12 }}
+      style={{ display: "grid", gap }}
       {...props}
     />
   );
@@ -595,108 +595,212 @@ function Form({ nameValue, emailValue }) {
 }
 ```
 
-## The Source of Power
+## The Advanced Flow
 
-I hope I've been able to show you how good `setCustomValidity` method is. Even though we used it to mimic some built-in behaviors, the techniques demonstrate how it can cover validation needs of all kinds.
+Now we're ready to try something non-trivial. In real-world apps, validation often gets more complex than local checks.
+Image a username input that should be **valid only if the username is not taken**. This would require async calls to your server and an intermediary state: the form should not be valid while the check is in progress. Let's see how our abstraction can handle this.
 
-But the real power comes from great APIs. And hopefully, you are now equipped with one of those, too.
+import {
+  useQuery,
+  QueryClient,
+  QueryClientProvider,
+} from "@tanstack/react-query";
+import { useState, useId } from "react";
+import { PieSpinner } from "../components/PieSpinner";
 
-<details style={{ display: 'none', border: '1px solid var(--neutral-2)', padding: '1rem' }}>
-<summary>Bonus challenge: "url"</summary>
-## Reimplementing the `type="url"` attribute
+export async function verifyUsername(userValue) {
+  await new Promise((r) => setTimeout(r, 3000));
+  const value = userValue.trim().toLowerCase();
+  if (value === "bad input") {
+    throw new Error("Bad Input");
+  }
+  return {
+    validationMessage: value === "taken" ? "Username is taken" : "",
+  };
+}
 
-Same rules, same steps.
+export function ExampleAsyncUsername() {
+  const [value, setValue] = useState("");
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["verifyUsername", value],
+    queryFn: () => verifyUsername(value),
+    enabled: Boolean(value),
+    retry: 0,
+  });
+  const id = useId();
+  return (
+    <Example id="example-async-username">
+      <DemoForm gap={20}>
+        <div style={{ display: "grid", gap: 8 }}>
+          <label htmlFor={id}>Username</label>{" "}
+          <div style={{ position: "relative", display: "grid" }}>
+            <Input
+              id={id}
+              name="username"
+              required={true}
+              customValidity={
+                isLoading
+                  ? "Verifying username..."
+                  : isError
+                  ? "Could not verify"
+                  : data?.validationMessage ?? ""
+              }
+              value={value}
+              onChange={(event) => {
+                setValue(event.currentTarget.value);
+              }}
+              placeholder="unique username"
+            />
+          </div>
+          <div style={{ fontSize: "0.8em" }}>
+            <span style={{ color: "var(--system-text-6)" }}>Helpers:</span>{" "}
+            <button
+              type="button"
+              className="unstyled-button"
+              style={{
+                color: "var(--link)",
+                borderBottom: "1px dashed currentColor",
+              }}
+              onClick={() => setValue("Taken")}
+            >
+              Taken username
+            </button>{" "}
+            <button
+              type="button"
+              className="unstyled-button"
+              style={{
+                color: "var(--link)",
+                borderBottom: "1px dashed currentColor",
+              }}
+              onClick={() => setValue("Unique")}
+            >
+              Valid username
+            </button>{" "}
+            <button
+              type="button"
+              className="unstyled-button"
+              style={{
+                color: "var(--link)",
+                borderBottom: "1px dashed currentColor",
+              }}
+              onClick={() => setValue("Bad Input")}
+            >
+              Bad input
+            </button>
+          </div>
+        </div>
+        <FormSubmitRow />
+        {isLoading ? (
+          <div style={{ display: "flex", gap: 12 }}>
+            <PieSpinner
+              key={value}
+              style={{ animationDuration: "3s", placeSelf: "center end" }}
+            />
+            Checking, can't submit form yet...
+          </div>
+        ) : null}
+      </DemoForm>
+    </Example>
+  );
+}
 
-Reference
+export const queryClient = new QueryClient();
+
+<QueryClientProvider client={queryClient}>
+  <ExampleAsyncUsername />
+</QueryClientProvider>
+
+Play around with this example. It uses the `required` to prevent empty inputs. But then it relies on `customValidity` to mark input as invalid during the loading state and based on the response.
+
+### Implementation
+
+First, we create an async function to check whether the username is unique that imitates a server request with a delay.
+
+```js
+export async function verifyUsername(userValue) {
+  await new Promise((r) => setTimeout(r, 3000));
+  const value = userValue.trim().toLowerCase();
+  if (value === "bad input") {
+    throw new Error("Bad Input");
+  }
+  return {
+    validationMessage: value === "taken" ? "Username is taken" : "",
+  };
+}
+```
+
+Next, we'll create a controlled form component and use [react-query](https://tanstack.com/query/latest) to manage to server request when the input value changes:
 
 ```jsx
-function Form() {
+function Form({ nameValue, emailValue }) {
+  const [value, setValue] = useState("");
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["verifyUsername", value],
+    queryFn: () => verifyUsername(value),
+    enabled: Boolean(value),
+  });
+
   return (
     <form>
-      <input type="url" />
+      <Input
+        name="username"
+        required={true}
+        value={value}
+        onChange={(event) => {
+          setValue(event.currentTarget.value);
+        }}
+      />
       <button>Submit</button>
     </form>
   );
 }
 ```
 
-export function FormExample6() {
-  return (
-    <Example>
-      <DemoForm>
-        <input
-          style={{ width: "100%" }}
-          type="url"
-          name="url"
-          defaultValue="https://example.com"
-          placeholder="only URLs are allowed"
-        />
-        <FormSubmitRow />
-      </DemoForm>
-    </Example>
-  );
-}
+Great! We have the setup in place. It consists of two crucial parts:
 
-<FormExample6 />
+- Verification request state managed by `useQuery`
+- Our custom `<Input />` component that is capable of taking the `customValidity` prop
 
-Here, the URL value must start with a protocol, e.g. `ftp://`.
+Let's "connect" them:
 
-The solution is identical to our email example:
+```jsx {9, 16-22}
+function Form({ nameValue, emailValue }) {
+  const [value, setValue] = useState("");
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["verifyUsername", value],
+    queryFn: () => verifyUsername(value),
+    enabled: Boolean(value),
+  });
 
-```jsx
-export function isValidUrl(value) {
-  try {
-    new URL(value);
-    return "";
-  } catch {
-    return "Please enter a URL";
-  }
-}
+  const validationMessage = data?.validationMessage;
 
-function Form({ defaultUrl }) {
   return (
     <form>
       <Input
-        defaultCustomValidity={isValidUrl(defaultUrl)}
-        defaultValue={defaultUrl}
+        name="username"
+        required={true}
+        customValidity={
+          isLoading
+            ? "Verifying username..."
+            : isError
+            ? "Could not verify"
+            : validationMessage
+        }
+        value={value}
         onChange={(event) => {
-          const input = event.currentTarget;
-          input.setCustomValidity(isValidUrl(input.value));
+          setValue(event.currentTarget.value);
         }}
       />
+      <button>Submit</button>
     </form>
   );
 }
 ```
 
-I don't know, looks good to me. Let's see it in action:
+That's it! We're describing the whole async validation flow in one attribute. You can go back to see [the result](#example-async-username) again if you wish
 
-export function isValidUrl(value) {
-  try {
-    new URL(value);
-    return "";
-  } catch {
-    return "Please enter a URL";
-  }
-}
+## The Source of Power
 
-export function FormExample7({ defaultUrl }) {
-  return (
-    <Example>
-      <DemoForm>
-        <Input
-          defaultCustomValidity={isValidUrl(defaultUrl)}
-          defaultValue={defaultUrl}
-          onChange={(event) => {
-            const input = event.currentTarget;
-            input.setCustomValidity(isValidUrl(input.value));
-          }}
-        />
-        <FormSubmitRow />
-      </DemoForm>
-    </Example>
-  );
-}
+I hope I've been able to show you how good `setCustomValidity` method is. Even though we used it to mimic some built-in behaviors, the techniques demonstrate how it can cover validation needs of all kinds.
 
-<FormExample7 defaultUrl="ftp://username" />
-</details>
+But the real power comes from great APIs. And hopefully, you are now equipped with one of those, too.

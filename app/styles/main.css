@@ -17,6 +17,7 @@
 
 :root {
   color-scheme: light dark;
+  scroll-behavior: smooth;
 
   /* background-image: linear-gradient( */
   /*   326deg, */

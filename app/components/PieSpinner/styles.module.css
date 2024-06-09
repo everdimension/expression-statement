@@ -1,0 +1,25 @@
+@property --percentage {
+  initial-value: 0%;
+  inherits: false;
+  syntax: "<percentage>";
+}
+
+.pieSpinner {
+  height: 20px;
+  width: 20px;
+  background-image: conic-gradient(
+    currentColor var(--percentage),
+    transparent 0
+  );
+  border-radius: 50%;
+}
+
+@keyframes progress {
+  to {
+    --percentage: 100%;
+  }
+}
+
+.pieSpinner {
+  animation: progress linear infinite;
+}
