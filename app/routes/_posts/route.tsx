@@ -3,7 +3,6 @@ import { Link, Outlet, useLoaderData } from "@remix-run/react";
 import fs from "node:fs/promises";
 import path from "path";
 import { Article } from "./Article";
-import { Footer } from "~/components/Footer";
 import { PostModuleSchema, getPostObject } from "./shared/getPostObject";
 import { Layout } from "~/components/Layout";
 import s from "./shared/styles.module.css";
@@ -18,7 +17,11 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
-  return data?.frontmatter.meta || [];
+  const meta = data?.frontmatter.meta || [];
+  if (data?.frontmatter.title) {
+    meta.push({ title: data.frontmatter.title });
+  }
+  return meta;
 };
 
 export default function Post() {

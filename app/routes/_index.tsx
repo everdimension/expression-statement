@@ -8,10 +8,13 @@ import { Layout } from "~/components/Layout";
 import s from "../styles/styles.module.css";
 import { getPostObject, PostModuleSchema } from "./_posts/shared/getPostObject";
 
+// const subtitle = 'Software, UX Design and the Web platform'
+const subtitle = "Software, UX Design and the Web";
+
 export const meta: MetaFunction = () => {
   return [
-    { title: "New Remix App" },
-    { name: "description", content: "Welcome to Remix!" },
+    { title: "Expression Statement" },
+    { name: "description", content: subtitle },
   ];
 };
 
@@ -49,9 +52,6 @@ export async function loader() {
 
 const ONELINE_TITLE = false;
 
-// const subtitle = 'Software, UX Design and the Web platform'
-const subtitle = "Software, UX Design and the Web";
-
 export default function Index() {
   const { posts } = useLoaderData<typeof loader>();
   console.log({ posts });
@@ -77,7 +77,7 @@ export default function Index() {
             </>
           )}
         </h1>
-        <div style={{ color: "var(--neutral-6)" }}>{subtitle}</div>
+        <div style={{ color: "var(--neutral-5)" }}>{subtitle}</div>
       </div>
 
       <div
@@ -117,6 +117,17 @@ export default function Index() {
               </time>
             </article>
           ))}
+          <details>
+            <summary>More Posts</summary>
+            <div>
+              {posts.length === 1
+                ? "Nope, no more, just that one."
+                : posts.length === 2
+                ? "Nope, just those two."
+                : "There aren't really any more posts actually."}{" "}
+              Why would I hide them lol
+            </div>
+          </details>
         </div>
       </main>
     </Layout>
