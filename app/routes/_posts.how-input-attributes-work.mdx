@@ -1,8 +1,8 @@
 ---
-title: You are not using Custom Validity
+title: You are not using Form Validation enough
+title-draft: How to use Form Validation in React
 date: 2024-06-02
 meta:
-  - title: Title example from frontmatter
   - name: description
     content: Description example from frontmatter
 ---
@@ -108,7 +108,7 @@ export function DemoForm({ gap = 12, ...props }) {
   );
 }
 
-export function FormSubmitRow() {
+export function FormSubmitRow({ onReset }) {
   return (
     <div style={{ display: "flex", alignItems: "baseline", gap: 20 }}>
       <button>Submit</button>
@@ -120,6 +120,7 @@ export function FormSubmitRow() {
           event.currentTarget.form.reset();
           event.currentTarget.form.classList.remove("touched");
           event.currentTarget.form.classList.remove("submitted");
+          onReset?.();
         }}
       >
         Reset
@@ -604,6 +605,7 @@ import {
   useQuery,
   QueryClient,
   QueryClientProvider,
+  useQueryClient,
 } from "@tanstack/react-query";
 import { useState, useId } from "react";
 import { PieSpinner } from "../components/PieSpinner";
@@ -621,12 +623,14 @@ export async function verifyUsername(userValue) {
 
 export function ExampleAsyncUsername() {
   const [value, setValue] = useState("");
+  const queryKey = "verifyUsername";
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["verifyUsername", value],
+    queryKey: [queryKey, value],
     queryFn: () => verifyUsername(value),
     enabled: Boolean(value),
     retry: 0,
   });
+  const queryClient = useQueryClient();
   const id = useId();
   return (
     <Example id="example-async-username">
@@ -689,14 +693,19 @@ export function ExampleAsyncUsername() {
             </button>
           </div>
         </div>
-        <FormSubmitRow />
+        <FormSubmitRow
+          onReset={() => {
+            console.log("onreset", { queryClient });
+            queryClient.removeQueries({ queryKey: [queryKey] });
+          }}
+        />
         {isLoading ? (
           <div style={{ display: "flex", gap: 12 }}>
             <PieSpinner
               key={value}
               style={{ animationDuration: "3s", placeSelf: "center end" }}
             />
-            Checking, can't submit form yet...
+            Checking, try to submit form
           </div>
         ) : null}
       </DemoForm>
@@ -761,7 +770,7 @@ Great! We have the setup in place. It consists of two crucial parts:
 - Verification request state managed by `useQuery`
 - Our custom `<Input />` component that is capable of taking the `customValidity` prop
 
-Let's "connect" them:
+Let's put those pieces together:
 
 ```jsx {9, 16-22}
 function Form({ nameValue, emailValue }) {

@@ -6,6 +6,7 @@ import { Article } from "./Article";
 import { PostModuleSchema, getPostObject } from "./shared/getPostObject";
 import { Layout } from "~/components/Layout";
 import s from "./shared/styles.module.css";
+import invariant from "tiny-invariant";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const slug = new URL(request.url).pathname.slice(1);
@@ -18,7 +19,11 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   const meta = data?.frontmatter.meta || [];
-  if (data?.frontmatter.title) {
+  if (!meta.some((entry) => "title" in entry && entry.title)) {
+    invariant(
+      data?.frontmatter.title,
+      "Post module must have title or meta.title"
+    );
     meta.push({ title: data.frontmatter.title });
   }
   return meta;
