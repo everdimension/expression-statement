@@ -17,16 +17,32 @@ export async function loader({ request }: LoaderFunctionArgs) {
   return json(getPostObject({ pathname, postModule, stats }));
 }
 
-export const meta: MetaFunction<typeof loader> = ({ data }) => {
-  const meta = data?.frontmatter.meta || [];
-  if (!meta.some((entry) => "title" in entry && entry.title)) {
-    invariant(
-      data?.frontmatter.title,
-      "Post module must have title or meta.title"
-    );
-    meta.push({ title: data.frontmatter.title });
+export const meta: MetaFunction<typeof loader> = ({ data, location }) => {
+  if (!data) {
+    return [];
   }
-  return meta;
+  const { title } = data.frontmatter;
+  const description = data.excerpt || data.frontmatter.description;
+  invariant(Boolean(description), "Post must contain excerpt or description");
+  return [
+    { title: data.frontmatter.title },
+    { name: "description", content: description },
+    { property: "og:title", content: title },
+    { property: "og:description", content: description },
+    { property: "og:type", content: "article" },
+    { property: "article:author", content: "everdimension" },
+    { property: "article:section", content: "Technology" },
+    // TODO?:
+    // { property: "article:tag", content: "..." },
+    // { property: "article:published_time", content: "..." },
+    // { property: "article:modified_time", content: "..." },
+    {
+      property: "og:url",
+      content: new URL(location.pathname, "https://expressionstatement.com/"),
+    },
+    { property: "og:site_name", content: "Expression Statement" },
+    ...(data.frontmatter.meta || []),
+  ];
 };
 
 export default function Post() {

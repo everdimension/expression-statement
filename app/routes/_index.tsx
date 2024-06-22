@@ -12,9 +12,18 @@ import { getPostObject, PostModuleSchema } from "./_posts/shared/getPostObject";
 const subtitle = "Software, UX Design and the Web";
 
 export const meta: MetaFunction = () => {
+  const title = "Expression Statement";
+  const description = subtitle;
   return [
-    { title: "Expression Statement" },
-    { name: "description", content: subtitle },
+    { title },
+    { name: "description", content: description },
+    { property: "og:title", content: title },
+    { property: "og:description", content: description },
+    { property: "og:type", content: "website" },
+    { property: "og:url", content: "https://expressionstatement.com/" },
+    { property: "og:site_name", content: title },
+    // TODO:
+    // { property: "og:image", content: description },
   ];
 };
 

@@ -16,7 +16,6 @@ export const FrontMatterSchema = z.object({
   meta: z
     .array(
       z.union([
-        z.object({ title: z.string() }),
         z.object({ name: z.string(), content: z.string() }),
         z.object({ property: z.string(), content: z.string() }),
       ])

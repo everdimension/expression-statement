@@ -17,7 +17,7 @@ export function getPostObject({
   postModule: PostModule;
   stats: Stats;
 }) {
-  const slug = pathname.replace("./_posts.", "").replace(/\.mdx$/, "");
+  const slug = pathname.replace(/^.+\/_posts\./, "").replace(/\.mdx$/, "");
   return {
     pathname,
     slug,
