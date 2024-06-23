@@ -1,4 +1,8 @@
-import { json, type MetaFunction } from "@remix-run/node";
+import {
+  json,
+  type LoaderFunctionArgs,
+  type MetaFunction,
+} from "@remix-run/node";
 import { z } from "zod";
 import fs from "node:fs/promises";
 import path from "path";
@@ -7,13 +11,16 @@ import { Link, useLoaderData } from "@remix-run/react";
 import { Layout } from "~/components/Layout";
 import s from "../styles/styles.module.css";
 import { getPostObject, PostModuleSchema } from "./_posts/shared/getPostObject";
+import mainPagePreviewSrc from "./social-preview/pre-built/main-page-preview.png";
 
 // const subtitle = 'Software, UX Design and the Web platform'
 const subtitle = "Software, UX Design and the Web";
 
-export const meta: MetaFunction = () => {
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
   const title = "Expression Statement";
   const description = subtitle;
+  invariant(data);
+  const previewImageUrl = new URL(mainPagePreviewSrc, data.origin);
   return [
     { title },
     { name: "description", content: description },
@@ -23,11 +30,18 @@ export const meta: MetaFunction = () => {
     { property: "og:url", content: "https://expressionstatement.com/" },
     { property: "og:site_name", content: title },
     // TODO:
-    // { property: "og:image", content: description },
+    { property: "og:image", content: previewImageUrl },
+    { property: "twitter:card", content: "summary_large_image" },
+    { propert: "twitter:creator", content: "@everdimension" },
+    { propert: "twitter:title", content: title },
+    { propert: "twitter:description", content: description },
+    { propert: "twitter:image", content: previewImageUrl },
+    { propert: "twitter:image:alt", content: description },
   ];
 };
 
-export async function loader() {
+export async function loader({ request }: LoaderFunctionArgs) {
+  const url = new URL(request.url);
   const mdxModules = import.meta.glob("./_posts.*.mdx", { eager: true });
   const postModules = z.record(z.string(), PostModuleSchema).parse(mdxModules);
   console.log({ postModules });
@@ -53,10 +67,11 @@ export async function loader() {
         pathname,
         postModule,
         stats,
+        origin: url.origin,
       });
     });
 
-  return json({ posts });
+  return json({ posts, origin: url.origin });
 }
 
 const ONELINE_TITLE = false;
