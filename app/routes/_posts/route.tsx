@@ -35,14 +35,14 @@ export const meta: MetaFunction<typeof loader> = ({ data, location }) => {
       content: new URL(location.pathname, "https://expressionstatement.com/"),
     },
     { property: "og:site_name", content: "Expression Statement" },
-    { propert: "og:image", content: imagePreview },
+    { property: "og:image", content: imagePreview },
 
     { property: "twitter:card", content: "summary_large_image" },
-    { propert: "twitter:creator", content: "@everdimension" },
-    { propert: "twitter:title", content: title },
-    { propert: "twitter:description", content: description },
-    { propert: "twitter:image", content: imagePreview },
-    { propert: "twitter:image:alt", content: description },
+    { property: "twitter:creator", content: "@everdimension" },
+    { property: "twitter:title", content: title },
+    { property: "twitter:description", content: description },
+    { property: "twitter:image", content: imagePreview },
+    { property: "twitter:image:alt", content: description },
     ...(data.frontmatter.meta || []),
   ];
 };

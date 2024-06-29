@@ -32,11 +32,11 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
     // TODO:
     { property: "og:image", content: previewImageUrl },
     { property: "twitter:card", content: "summary_large_image" },
-    { propert: "twitter:creator", content: "@everdimension" },
-    { propert: "twitter:title", content: title },
-    { propert: "twitter:description", content: description },
-    { propert: "twitter:image", content: previewImageUrl },
-    { propert: "twitter:image:alt", content: description },
+    { property: "twitter:creator", content: "@everdimension" },
+    { property: "twitter:title", content: title },
+    { property: "twitter:description", content: description },
+    { property: "twitter:image", content: previewImageUrl },
+    { property: "twitter:image:alt", content: description },
   ];
 };
 
