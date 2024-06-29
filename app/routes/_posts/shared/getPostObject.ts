@@ -1,4 +1,4 @@
-import type { Stats } from "fs";
+// import type { Stats } from "fs";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 import { FrontMatterSchema } from "~/types/mdx-types";
@@ -12,12 +12,12 @@ export type PostModule = z.infer<typeof PostModuleSchema>;
 export function getPostObject({
   pathname,
   postModule,
-  stats,
+  // stats,
   origin,
 }: {
   pathname: string;
   postModule: PostModule;
-  stats: Stats;
+  // stats: Stats;
   origin: string;
 }) {
   const slug = pathname.replace(/^.+\/_posts\./, "").replace(/\.mdx$/, "");
@@ -30,8 +30,8 @@ export function getPostObject({
     excerpt: postModule.excerpt,
     title: postModule.frontmatter.title,
     description,
-    date: postModule.frontmatter.date || stats.birthtimeMs,
-    modified: stats.mtimeMs,
+    date: postModule.frontmatter.date,
+    // modified: stats.mtimeMs,
     imagePreview: new URL(`/social-preview?post=${slug}`, origin),
   };
 }
