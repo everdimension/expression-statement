@@ -1,6 +1,6 @@
 import { vitePlugin as remix } from "@remix-run/dev";
 import { installGlobals } from "@remix-run/node";
-import Inspect from "vite-plugin-inspect";
+// import Inspect from "vite-plugin-inspect";
 import mdx from "@mdx-js/rollup";
 import remarkFrontmatter from "remark-frontmatter";
 import remarkMdxFrontmatter from "remark-mdx-frontmatter";
@@ -24,7 +24,7 @@ const options: Options = {
 
 export default defineConfig({
   plugins: [
-    Inspect(),
+    // Inspect(),
     mdx({
       remarkPlugins: [
         remarkFrontmatter,
