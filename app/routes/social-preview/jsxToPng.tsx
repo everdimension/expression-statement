@@ -38,12 +38,16 @@ export async function getGoogleFonts(
 export async function jsxToPng({
   jsx,
   fonts,
+  width = 800,
+  height = 480,
 }: {
   jsx: JSX.Element;
   fonts: SatoriOptions["fonts"];
+  width?: number;
+  height?: number;
 }) {
-  const width = 800;
-  const svg = await satori(jsx, { width, height: 480, fonts });
+  // const width = 800;
+  const svg = await satori(jsx, { width, height, fonts });
   const resvg = new Resvg(svg, {
     fitTo: { mode: "width", value: width * 2 },
   });

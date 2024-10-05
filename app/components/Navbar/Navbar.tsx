@@ -16,7 +16,7 @@ export function Navbar() {
           className="heading hover:primary"
           style={{ lineHeight: 0.9, color: "var(--link)" }}
         >
-          {"<-"} Expression Statement
+          Expression Statement
         </Link>
       </div>
     </nav>

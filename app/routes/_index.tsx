@@ -4,8 +4,6 @@ import {
   type MetaFunction,
 } from "@remix-run/node";
 import { z } from "zod";
-// import fs from "node:fs/promises";
-// import path from "path";
 import invariant from "tiny-invariant";
 import { Link, useLoaderData } from "@remix-run/react";
 import { Layout } from "~/components/Layout";
@@ -40,38 +38,30 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
   ];
 };
 
+function reverseChronologicalSorter(
+  a: { date?: string },
+  b: { date?: string }
+) {
+  const now = Date.now();
+  return new Date(b.date || now).getTime() - new Date(a.date || now).getTime();
+}
+
 export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
   const mdxModules = import.meta.glob("./_posts.*.mdx", { eager: true });
-  // console.log({ mdxModules })
   const postModules = z.record(z.string(), PostModuleSchema).parse(mdxModules);
-  // console.log({ postModules });
-
-  // const pathnames = Object.keys(postModules);
-  // console.log("import emta dirname", import.meta.dirname);
-  // const filesStats = await Promise.all(
-  //   pathnames.map(async (pathname) => {
-  //     const stats = await fs.stat(path.resolve(import.meta.dirname, pathname));
-  //     return { pathname, stats };
-  //   })
-  // );
-  // const statsMap = new Map(
-  //   filesStats.map(({ pathname, stats }) => [pathname, stats])
-  // );
   const posts = Object.keys(postModules)
     .reverse()
     .map((key) => ({ pathname: key, postModule: postModules[key] }))
     .filter(({ postModule }) => postModule.frontmatter.draft !== true)
     .map(({ pathname, postModule }) => {
-      // const stats = statsMap.get(pathname);
-      // invariant(stats, `File Stats not found for ${pathname}`);
       return getPostObject({
         pathname,
         postModule,
-        // stats,
         origin: url.origin,
       });
-    });
+    })
+    .sort(reverseChronologicalSorter);
 
   return json({ posts, origin: url.origin });
 }
@@ -139,7 +129,7 @@ export default function Index() {
                   month: "long",
                   day: "numeric",
                   year: "numeric",
-                }).format(new Date(post.date))}
+                }).format(new Date(post.date || Date.now()))}
               </time>
             </article>
           ))}
