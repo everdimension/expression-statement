@@ -1,0 +1,734 @@
+---
+title: "HTML Form Validation is heavily underused"
+date: 2024-10-23
+---
+
+export const excerpt = `
+HTML Forms have powerful validation mechanisms,
+but they are heavily underused. In fact, not many people event know much
+about them. Is this because of some flaw in their design? Let’s explore.
+`;
+
+{excerpt}
+
+## Attributes, methods, and properties
+
+It's easy to disallow empty inputs by adding
+a [`required`](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/required) attribute.
+Beyond that, there is a bunch of other ways that you can add constraints to your input. Precisely, there are three ways to do it:
+
+- Using specific `type` attribute values, such as `"email"`, `"number"`, or `"url"`
+- Using other input attributes that create constraints, such as `"pattern"` or `"maxlength"`
+- **Using the `setCustomValidity` DOM method of the input**
+
+The last one is the most powerful as it allows to create arbitrary validation logic and handle
+complex cases.
+Do you notice how it differs from the first two techniques? The first two are defined with _attributes_, but `setCustomValidity`
+is a _method_.
+
+Here's a great write-up that explains the differences between DOM attributes and properties: [https://jakearchibald.com/2024/attributes-vs-properties/](https://jakearchibald.com/2024/attributes-vs-properties/)
+
+## The problem
+
+The fact that `setCustomValidity` API is exposed only as a method and doesn't have an attribute equivalent
+leads to some terrible ergonomics. I'll show you with an example.
+
+But first, a very quick intro to how this API works:
+
+```js
+// Make input invalid
+input.setCustomValidity("Any text message");
+```
+
+This would make input _invalid_ and the browser will show the reason as "Any text message".
+
+```js
+// Remove custom constraints and make input valid
+input.setCustomValidity("");
+```
+
+Passing an empty string makes the input _valid_ (unless other constraints are applied).
+
+That's pretty much it! Now let's apply this knowledge.<br/>
+Let's say we want to implement an equivalent of the `required` attribute.
+That means that an empty input must be prevent the form from being submitted.
+
+```jsx {6-10}
+<input
+  name="example"
+  placeholder="..."
+  onChange={(event) => {
+    const input = event.currentTarget;
+    if (input.value === "") {
+      input.setCustomValidity("Custom message: input is empty");
+    } else {
+      input.setCustomValidity("");
+    }
+  }}
+/>
+```
+
+This kind of looks like we're done and this code should be enough to accomplish the task.
+But try to see it in action:
+
+<FormExampleRequiredAttr1 />
+
+It may seem to work, but there's just one important edge case: the input is
+in a valid state _initially_. If you reset the component and press the "submit"
+button, the form submission will go through.
+But surely, before we ever touch the input, it is empty, and therefore must be invalid.
+But we only ever do something when the input value _changes_.
+
+How can we fix this?
+
+Let's execute some code when the component mounts:
+
+```jsx {1,4-9}
+import { useRef, useLayoutEffect } from "react";
+
+function Form() {
+  const ref = useRef();
+  useLayoutEffect(() => {
+    // Make input invalid on initial render if it's empty
+    const input = ref.current;
+    const empty = input.value !== "";
+    input.setCustomValidity(empty ? "Initial message: input is empty" : "");
+  }, []);
+
+  return (
+    <form>
+      <input
+        ref={ref}
+        name="example"
+        onChange={(event) => {
+          const input = event.currentTarget;
+          if (input.value === "") {
+            input.setCustomValidity("Custom message: input is empty");
+          } else {
+            input.setCustomValidity("");
+          }
+        }}
+      />
+      <button>Submit</button>
+    </form>
+  );
+}
+```
+
+<FormExampleRequiredAttr2 />
+
+Great! Now everything works as expected. But at what cost?
+
+## Refactoring ("The Problem"?)
+
+Let's look at our clumsy way to validate the initial value:
+
+```js
+const ref = useRef();
+useLayoutEffect(() => {
+  // Make input invalid on initial render if it's empty
+  const input = ref.current;
+  const empty = input.value !== "";
+  input.setCustomValidity(empty ? "Initial message: input is empty" : "");
+}, []);
+```
+
+Ugh! Wouldn't want to write that one each time. Let's think about what's wrong with this.
+
+- The validation logic is duplicated between the onChange handler and the initial render phase
+- The initial validation is not co-located with the input, so we're losing code cohesion.
+  It's fragile: if you update validation logic, you might forget to update code in both places.
+- The `useRef` + `useLayouEffect` + `onChange` combo is just too much ceremony,
+  especially when a form has a lot of inputs. And it gets even more confusing if only some of those inputs use `customValidity`
+
+This is what happens when you deal with a purely imperative API in a declarative component.
+
+> Unlike validation attributes, `CustomValidity` is a purely imperative API. In other words, there's no input attribute that we can use to set custom validity.
+
+In fact, I would argue that this is **the main reason for poor adoption of native form validation**. If the API is cumbersome, sometimes it just does not matter how powerful it is.
+
+## The missing part
+
+In essence, this is the attribute we need:
+
+```html
+<input custom-validity="your message" />
+```
+
+In a declarative framework, this would allow to define input validations in a very powerful way:
+
+```jsx {10}
+function Form() {
+  const [value, setValue] = useState();
+  const handleChange = (event) => setValue(event.target.value);
+  return (
+    <form>
+      <input
+        name="example"
+        value={value}
+        onChange={handleChange}
+        custom-validity={value.length ? "Fill out this field" : ""}
+      />
+      <button>Submit</button>
+    </form>
+  );
+}
+```
+
+Pretty cool! In my opinion, at least. Though you can rightfully argue that this accomplishes only what
+the existing `required` attribute is already capable of. Where's the "power"?
+
+Let me show you, but first, since there's no actual `custom-validity` currently in the HTML Spec,
+let's implement it in userland.
+
+```jsx
+function Input({ customValidity, ...props }) {
+  const ref = useRef();
+  useLayoutEffect(() => {
+    if (customValidity != null) {
+      const input = ref.current;
+      input.setCustomValidity(customValidity);
+    }
+  }, [customValidity]);
+
+  return <input ref={ref} {...props} />;
+}
+```
+
+TODO: Here's a link to more complete implementation
+
+## The power
+
+Now we'll explore which non-trivial cases this design can help solve.
+
+In real-world apps, validation often gets more complex than local checks.
+Imagine a username input that should be **valid only if the username is not taken**.
+This would require async calls to your server and an intermediary state: the form
+should not be valid while the check is in progress.
+Let's see how our abstraction can handle this.
+
+<QueryClientProvider client={queryClient}>
+  <ExampleAsyncUsername />
+</QueryClientProvider>
+
+Play around with this example. It uses the `required` to prevent empty inputs. But then it relies on `customValidity` to mark input as invalid during the loading state and based on the response.
+
+### Implementation
+
+First, we create an async function to check whether the username is unique that imitates a server request with a delay.
+
+```js
+export async function verifyUsername(userValue) {
+  await new Promise((r) => setTimeout(r, 3000));
+  const value = userValue.trim().toLowerCase();
+  if (value === "bad input") {
+    throw new Error("Bad Input");
+  }
+  return {
+    validationMessage: value === "taken" ? "Username is taken" : "",
+  };
+}
+```
+
+Next, we'll create a controlled form component and use [react-query](https://tanstack.com/query/latest) to manage to server request when the input value changes:
+
+```jsx
+function Form({ nameValue, emailValue }) {
+  const [value, setValue] = useState("");
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["verifyUsername", value],
+    queryFn: () => verifyUsername(value),
+    enabled: Boolean(value),
+  });
+
+  return (
+    <form>
+      <Input
+        name="username"
+        required={true}
+        value={value}
+        onChange={(event) => {
+          setValue(event.currentTarget.value);
+        }}
+      />
+      <button>Submit</button>
+    </form>
+  );
+}
+```
+
+Great! We have the setup in place. It consists of two crucial parts:
+
+- Verification request state managed by `useQuery`
+- Our custom `<Input />` component that is capable of taking the `customValidity` prop
+
+Let's put those pieces together:
+
+```jsx {9, 16-22}
+function Form() {
+  const [value, setValue] = useState("");
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["verifyUsername", value],
+    queryFn: () => verifyUsername(value),
+    enabled: Boolean(value),
+  });
+
+  const validationMessage = data?.validationMessage;
+
+  return (
+    <form>
+      <Input
+        name="username"
+        required={true}
+        customValidity={
+          isLoading
+            ? "Verifying username..."
+            : isError
+            ? "Could not verify"
+            : validationMessage
+        }
+        value={value}
+        onChange={(event) => {
+          setValue(event.currentTarget.value);
+        }}
+      />
+      <button>Submit</button>
+    </form>
+  );
+}
+```
+
+That's it! We're describing the whole async validation flow, including
+loading, error and success states, _in one attribute_. You can go back to see [the result](#example-async-username) again if you wish
+
+### One more
+
+This one will be shorter, but also interesting, because it covers dependent input
+fields. Let's implement a form that requires to repeat the entered password:
+
+```jsx {5,22}
+function ConfirmPasswordForm() {
+  const [password, setPassword] = useState("");
+  const [confirmedPass, setConfirmedPass] = useState("");
+
+  const matches = confirmedPass === password;
+  return (
+    <form>
+      <Input
+        type="password"
+        name="password"
+        required={true}
+        value={password}
+        onChange={(event) => {
+          setPassword(event.currentTarget.value);
+        }}
+      />
+      <Input
+        type="password"
+        name="confirmedPassword"
+        required={true}
+        value={confirmedPass}
+        customValidity={matches ? "" : "Password must match"}
+        onChange={(event) => {
+          setConfirmedPass(event.currentTarget.value);
+        }}
+      />
+      <button>Submit</button>
+    </form>
+  );
+}
+```
+
+You can try it out:
+
+<ConfirmPasswordForm />
+
+## Conclusion
+
+I hope I've been able to show you how `setCustomValidity` can cover
+validation needs of all kinds.
+
+But the real power comes from great APIs.
+
+And hopefully, you are now equipped with one of those.<br/>
+And even more hopefully, we will see it natively in the HTML Spec one day.
+
+export function FormExampleRequiredAttr1() {
+  return (
+    <Example>
+      <DemoForm>
+        <input
+          style={{ width: "100%" }}
+          name="example"
+          placeholder="Type something, then erase it"
+          onChange={(event) => {
+            const input = event.currentTarget;
+            if (input.value === "") {
+              input.setCustomValidity("Custom message: input is empty");
+            } else {
+              input.setCustomValidity("");
+            }
+          }}
+        />
+        <FormSubmitRow />
+      </DemoForm>
+    </Example>
+  );
+}
+
+import { useRef, useEffect } from "react";
+
+export function FormExampleRequiredAttr2() {
+  const ref = useRef();
+  const initialMessage = "Initial message: input is empty";
+  useEffect(() => {
+    const input = ref.current;
+    input.setCustomValidity(initialMessage);
+  }, []);
+  return (
+    <Example>
+      <DemoForm>
+        <input
+          ref={ref}
+          style={{ width: "100%" }}
+          name="example"
+          // NOTE: non-standard; a hack for our custom "form.reset()" behavior
+          data-default-validation-message={initialMessage}
+          placeholder="Type something, then erase it"
+          onChange={(event) => {
+            const input = event.currentTarget;
+            if (input.value === "") {
+              input.setCustomValidity("Custom message: input is empty");
+            } else {
+              input.setCustomValidity("");
+            }
+          }}
+        />
+        <FormSubmitRow />
+      </DemoForm>
+    </Example>
+  );
+}
+
+export function Example(props) {
+  return (
+    <div
+      className="form-demo"
+      style={{
+        border: "1px dashed var(--form-demo-border-color)",
+        marginBlock: "1em",
+      }}
+      {...props}
+    />
+  );
+}
+
+export function DemoForm({ gap = 12, ...props }) {
+  return (
+    <form
+      onSubmit={(event) => {
+        event.preventDefault();
+        event.currentTarget.classList.add("touched");
+        event.currentTarget.classList.add("submitted");
+      }}
+      onChange={(event) => {
+        event.currentTarget.classList.add("touched");
+        event.currentTarget.classList.remove("submitted");
+      }}
+      style={{ display: "grid", gap }}
+      {...props}
+    />
+  );
+}
+
+export function FormSubmitRow({ onReset }) {
+  return (
+    <div style={{ display: "flex", alignItems: "baseline", gap: 20 }}>
+      <button>Submit</button>
+      <button
+        className="unstyled-button hover:underline"
+        type="button"
+        style={{ color: "var(--system-text-5)" }}
+        onClick={(event) => {
+          event.currentTarget.form.reset();
+          event.currentTarget.form.classList.remove("touched");
+          event.currentTarget.form.classList.remove("submitted");
+          for (const el of event.currentTarget.form.elements) {
+            el.setCustomValidity(el.dataset.defaultValidationMessage || "");
+          }
+          onReset?.();
+        }}
+      >
+        Reset
+      </button>
+    </div>
+  );
+}
+
+export function Input({ defaultCustomValidity, customValidity, ...props }) {
+  const customValidityRef = useRef(defaultCustomValidity);
+  const ref = useRef();
+  useEffect(() => {
+    if (customValidityRef.current != null) {
+      const input = ref.current;
+      input.setCustomValidity(customValidityRef.current);
+    }
+  }, []);
+  useEffect(() => {
+    if (customValidity != null) {
+      const input = ref.current;
+      input.setCustomValidity(customValidity);
+    }
+  }, [customValidity]);
+  return <input ref={ref} {...props} />;
+}
+
+import {
+  useQuery,
+  useMutation,
+  QueryClient,
+  QueryClientProvider,
+} from "@tanstack/react-query";
+import { useState, useId } from "react";
+import { PieSpinner } from "../components/PieSpinner";
+
+export async function verifyUsername(userValue) {
+  await new Promise((r) => setTimeout(r, 3000));
+  const value = userValue.trim().toLowerCase();
+  if (value === "bad input") {
+    throw new Error("Bad Input");
+  }
+  return {
+    validationMessage: value === "taken" ? "Username is taken" : "",
+  };
+}
+
+export function ExampleAsyncUsername() {
+  const queryKey = "verifyUsername";
+  /**
+   * useMutation is a better fit for the demo because
+   * we don't want caching at all (to better demonstrate different inputs) and
+   * we do need the resetting feature
+   */
+  const { mutate, data, isPending, isError, error, reset } = useMutation({
+    mutationFn: (value) => {
+      console.log("mutationFn", value);
+      return verifyUsername(value);
+    },
+  });
+  const [value, setValueState] = useState("");
+  const setValue = (value) => {
+    setValueState(value);
+    mutate(value);
+  };
+  const id = useId();
+  return (
+    <Example id="example-async-username">
+      <DemoForm gap={20}>
+        <div style={{ display: "grid", gap: 8 }}>
+          <label htmlFor={id}>Username</label>{" "}
+          <div style={{ position: "relative", display: "grid" }}>
+            <Input
+              id={id}
+              name="username"
+              required={true}
+              customValidity={
+                isPending
+                  ? "Verifying username..."
+                  : isError
+                  ? "Could not verify"
+                  : data?.validationMessage ?? ""
+              }
+              value={value}
+              onChange={(event) => {
+                setValue(event.currentTarget.value);
+              }}
+              placeholder="unique username"
+            />
+          </div>
+          <div style={{ fontSize: "0.8em" }}>
+            <span style={{ color: "var(--system-text-6)" }}>Helpers:</span>{" "}
+            <button
+              type="button"
+              className="unstyled-button"
+              style={{
+                color: "var(--link)",
+                borderBottom: "1px dashed currentColor",
+              }}
+              onClick={() => setValue("Taken")}
+            >
+              Taken username
+            </button>{" "}
+            <button
+              type="button"
+              className="unstyled-button"
+              style={{
+                color: "var(--link)",
+                borderBottom: "1px dashed currentColor",
+              }}
+              onClick={() => setValue("Unique")}
+            >
+              Valid username
+            </button>{" "}
+            <button
+              type="button"
+              className="unstyled-button"
+              style={{
+                color: "var(--link)",
+                borderBottom: "1px dashed currentColor",
+              }}
+              onClick={() => setValue("Bad Input")}
+            >
+              Bad input
+            </button>
+          </div>
+        </div>
+        <FormSubmitRow
+          onReset={() => {
+            console.log("onreset", { queryClient });
+            console.log("remove()");
+            setValueState("");
+            reset();
+            // queryClient.resetQueries({ queryKey: [queryKey] });
+            // queryClient.removeQueries({ queryKey: [queryKey] });
+          }}
+        />
+        {isPending ? (
+          <div style={{ display: "flex", gap: 12 }}>
+            <PieSpinner
+              key={value}
+              style={{ animationDuration: "3s", placeSelf: "center end" }}
+            />
+            Checking, try to submit form
+          </div>
+        ) : null}
+      </DemoForm>
+    </Example>
+  );
+}
+
+export const queryClient = new QueryClient();
+
+export function copyFormData(fd) {
+  const newFd = new FormData();
+  for (const [name, value] of fd.entries()) {
+    newFd.set(name, value);
+  }
+  return newFd;
+}
+
+export function ConfirmPasswordForm() {
+  const [fd, setFd] = useState(() => new FormData());
+  const handleChange = (event) => {
+    const newFd = copyFormData(fd);
+    newFd.set(event.target.name, event.target.value);
+    setFd(newFd);
+  };
+  const matches = fd.get("confirmedPassword") === fd.get("password");
+  const id1 = useId();
+  const id2 = useId();
+  return (
+    <Example>
+      <DemoForm>
+        <label htmlFor={id1}>Enter Password</label>{" "}
+        <Input
+          id={id1}
+          type="password"
+          name="password"
+          required={true}
+          value={fd.get("password") || ""}
+          onChange={handleChange}
+        />
+        <label htmlFor={id2}>Repeat Password</label> <Input
+          id={id2}
+          type="password"
+          name="confirmedPassword"
+          required={true}
+          value={fd.get("confirmedPassword") || ""}
+          customValidity={matches ? "" : "Password must match"}
+          onChange={handleChange}
+        />
+        <FormSubmitRow
+          onReset={() => {
+            setFd(new FormData());
+          }}
+        />
+      </DemoForm>
+    </Example>
+  );
+}
+
+<style>
+  {`
+  .form-demo, .form-demo input {
+    font-family: monospace;
+  }
+  .form-demo button {
+    background-color: var(--indigo-5);
+    padding: .5em 1em;
+    color: var(--white);
+    border: none;
+  }
+  .form-demo input {
+    --normal-color: var(--neutral-3);
+    --invalid-color: #f06;
+    --border-color: var(--normal-color);
+    padding: 10px;
+    border: 2px solid var(--border-color);
+    border-radius: 0;
+    outline: none;
+    background-color: Canvas;
+    -webkit-appearance: none;
+  }
+  .form-demo input:focus {
+    outline: 2px solid var(--link);
+    outline-offset: 2px;
+  }
+  .form-demo :is(.touched, .submitted) input:invalid {
+    --border-color: var(--invalid-color);
+    outline-color: var(--invalid-color);
+  }
+  .form-demo :is(.touched, .submitted) input:invalid:focus {
+    outline: 2px solid #f06;
+    outline-offset: 2px;
+    --border-color: var(--normal-color);
+  }
+  .form-demo .submitted input {
+    --border-color: var(--green-4);
+  }
+  .form-demo {
+    padding: 20px;
+  }
+  .form-demo input {
+    font-size: 16px;
+  }
+  @media (min-width: 640px) {
+    .form-demo input {
+      font-size: 1em;
+    }
+    .form-demo {
+      padding: 40px;
+    }
+  }
+
+  .form-demo {
+    --form-demo-border-color: var(--neutral-3);
+  }
+  .form-demo:has(form.touched) {
+    --form-demo-border-color: var(--neutral-6);
+  }
+
+  .form-demo .unstyled-button {
+    padding: 0;
+    margin: 0;
+    border: none;
+    background: transparent;
+    outline-offset: 2px;
+    color: currentColor;
+    font-size: inherit;
+    font-weight: inherit;
+    font-family: inherit;
+    line-height: inherit;
+  }
+`}
+</style>

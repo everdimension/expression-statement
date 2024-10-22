@@ -29,3 +29,7 @@
 .markdown pre {
   overflow-x: auto;
 }
+
+.markdown a {
+  overflow-wrap: break-word;
+}

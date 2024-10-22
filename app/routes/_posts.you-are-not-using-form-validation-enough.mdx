@@ -3,6 +3,7 @@ title: You are not using Form Validation enough
 title-draft: How to use Form Validation in React
 date: 2024-06-30
 description: HTML Form inputs have some powerful validation mechanisms. For example, it's easy to disallow empty inputs by adding a "required" attribute. Beyond that, there is a bunch of other ways that you can add constraints to your input. Precisely, there are three ways to do it...
+draft: true
 ---
 
 <style>
@@ -595,7 +596,7 @@ function Form({ nameValue, emailValue }) {
 ## The Advanced Flow
 
 Now we're ready to try something non-trivial. In real-world apps, validation often gets more complex than local checks.
-Image a username input that should be **valid only if the username is not taken**. This would require async calls to your server and an intermediary state: the form should not be valid while the check is in progress. Let's see how our abstraction can handle this.
+Imagine a username input that should be **valid only if the username is not taken**. This would require async calls to your server and an intermediary state: the form should not be valid while the check is in progress. Let's see how our abstraction can handle this.
 
 import {
   useQuery,
