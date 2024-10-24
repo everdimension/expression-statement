@@ -83,7 +83,7 @@ How can we fix this?
 
 Let's execute some code when the component mounts:
 
-```jsx {1,4-9}
+```jsx {1,4-10}
 import { useRef, useLayoutEffect } from "react";
 
 function Form() {
@@ -152,7 +152,7 @@ In fact, I would argue that this is **the main reason for poor adoption of nativ
 In essence, this is the attribute we need:
 
 ```html
-<input custom-validity="your message" />
+<input custom-validity="error message" />
 ```
 
 In a declarative framework, this would allow to define input validations in a very powerful way:
