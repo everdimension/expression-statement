@@ -42,7 +42,8 @@ function truncateWords(text: string, limit: number) {
   return result.endsWith(".") ? result : `${result}...`;
 }
 
-const GENERATE_ENABLED = process.env.NODE_ENV === "development";
+// const GENERATE_ENABLED = process.env.NODE_ENV === "development";
+const GENERATE_ENABLED = true;
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);

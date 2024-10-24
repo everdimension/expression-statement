@@ -24,7 +24,8 @@ export function PostSocialPreview({
   description: string;
   date: number | string;
 }) {
-  const footerType = "watermark" as "default" | "watermark";
+  // const footerType = "watermark" as "default" | "watermark";
+  const footerType = "default" as "default" | "watermark";
   return (
     <div
       style={{
@@ -92,7 +93,7 @@ export function PostSocialPreview({
                 alignItems: "baseline",
                 fontSize: 32,
                 color: "#868e96",
-                fontWeight: 900,
+                // fontWeight: 900,
               }}
             >
               Expression Statement
