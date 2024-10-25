@@ -1,10 +1,12 @@
 import { LoaderFunctionArgs, MetaFunction, json } from "@remix-run/node";
 import { Outlet, useLoaderData } from "@remix-run/react";
+import { Spacer } from "structure-kit";
 import { Article } from "./Article";
 import { Layout } from "~/components/Layout";
 import s from "./shared/styles.module.css";
 import { getPostBySlug } from "./shared/getPostBySlug";
 import { Navbar } from "~/components/Navbar";
+import { TwitterMedia } from "../about";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
@@ -61,15 +63,19 @@ export default function Post() {
             <h1 style={{ marginBottom: 0 }} className={s.postTitle}>
               {title}
             </h1>
-            <time style={{ color: "var(--neutral-5)", fontSize: "0.8em" }}>
-              {new Intl.DateTimeFormat("en", {
-                month: "long",
-                day: "numeric",
-                year: "numeric",
-              }).format(new Date(date))}
-            </time>
+            {date ? (
+              <time style={{ color: "var(--neutral-5)", fontSize: "0.8em" }}>
+                {new Intl.DateTimeFormat("en", {
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                }).format(new Date(date))}
+              </time>
+            ) : null}
           </div>
           <Outlet />
+          <Spacer height={24} />
+          <TwitterMedia />
         </Article>
       </main>
     </Layout>

@@ -1,6 +1,28 @@
-import { HStack, VStack } from "structure-kit";
+import { HStack, Spacer, VStack } from "structure-kit";
 import { Layout } from "~/components/Layout";
 import { Navbar } from "~/components/Navbar";
+
+export function TwitterMedia() {
+  return (
+    <HStack gap={8} alignItems="center">
+      <img
+        style={{ width: 32, height: 32, borderRadius: "50%" }}
+        src="https://pbs.twimg.com/profile_images/826440416371302400/HosO7Uze_400x400.jpg"
+        alt=""
+      />
+      <div>
+        <a
+          href="https://twitter.com/everdimension"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ fontStyle: "italic" }}
+        >
+          @everdimension
+        </a>
+      </div>
+    </HStack>
+  );
+}
 
 export default function About() {
   return (
@@ -16,21 +38,38 @@ export default function About() {
             </strong>{" "}
             is about Software, User Experience Design and the Web Platform
           </div>
-          <HStack gap={12} alignItems="center">
-            <img
-              style={{ width: 32, height: 32, borderRadius: "50%" }}
-              src="https://pbs.twimg.com/profile_images/826440416371302400/HosO7Uze_400x400.jpg"
-              alt=""
-            />
-            <p>
-              <a
-                href="https://twitter.com/everdimension"
-                style={{ color: "var(--black)", fontStyle: "italic" }}
-              >
-                @everdimension
-              </a>
-            </p>
-          </HStack>
+
+          <Spacer height={40} />
+          <h2>Contacts</h2>
+          <Spacer height={20} />
+          <div style={{ display: "grid", gap: 8 }}>
+            <HStack gap={12} alignItems="baseline">
+              <div>Twitter:</div>
+              <div>
+                <a
+                  href="https://twitter.com/everdimension"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ fontStyle: "italic" }}
+                >
+                  x.com/everdimension
+                </a>
+              </div>
+            </HStack>
+            <HStack gap={12} alignItems="baseline">
+              <div>Github:</div>
+              <div>
+                <a
+                  href="https://github.com/everdimension"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ fontStyle: "italic" }}
+                >
+                  github.com/everdimension
+                </a>
+              </div>
+            </HStack>
+          </div>
         </main>
       </VStack>
     </Layout>

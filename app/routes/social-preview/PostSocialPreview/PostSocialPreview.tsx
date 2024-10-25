@@ -22,7 +22,7 @@ export function PostSocialPreview({
 }: {
   title: string;
   description: string;
-  date: number | string;
+  date: number | string | undefined;
 }) {
   // const footerType = "watermark" as "default" | "watermark";
   const footerType = "default" as "default" | "watermark";
@@ -67,20 +67,22 @@ export function PostSocialPreview({
               <span style={{ fontWeight: 500 }}>{description}</span>
             </div>
           </div>
-          <span
-            style={{
-              display: "none",
-              fontWeight: 500,
-              color: "#868e96",
-              fontSize: 18,
-            }}
-          >
-            {new Intl.DateTimeFormat("en", {
-              day: "numeric",
-              month: "short",
-              year: "numeric",
-            }).format(new Date(date))}
-          </span>
+          {date ? (
+            <span
+              style={{
+                display: "none",
+                fontWeight: 500,
+                color: "#868e96",
+                fontSize: 18,
+              }}
+            >
+              {new Intl.DateTimeFormat("en", {
+                day: "numeric",
+                month: "short",
+                year: "numeric",
+              }).format(new Date(date))}
+            </span>
+          ) : null}
         </div>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           {logo}
