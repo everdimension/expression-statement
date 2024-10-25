@@ -1,6 +1,5 @@
 import {
   json,
-  redirect,
   type LoaderFunctionArgs,
   type MetaFunction,
 } from "@remix-run/node";
@@ -58,13 +57,6 @@ function reverseChronologicalSorter(
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
-  if (process.env.NODE_ENV === "production") {
-    if (url.hostname.startsWith("www.")) {
-      url.protocol = "https:";
-      url.hostname = url.hostname.replace("www.", "");
-      return redirect(url.toString(), 301);
-    }
-  }
   const mdxModules = import.meta.glob("./_posts.*.mdx", { eager: true });
   const postModules = z.record(z.string(), PostModuleSchema).parse(mdxModules);
   const posts = Object.keys(postModules)
