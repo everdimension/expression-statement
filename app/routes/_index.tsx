@@ -1,5 +1,6 @@
 import {
   json,
+  redirect,
   type LoaderFunctionArgs,
   type MetaFunction,
 } from "@remix-run/node";
@@ -19,6 +20,15 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
   const description = subtitle;
   invariant(data);
   const previewImageUrl = new URL(mainPagePreviewSrc, data.origin);
+  if (process.env.NODE_ENV !== "development") {
+    // Our server doesn't see that it's being requested via https
+    // This is part of a bigger problem:
+    // 1. https://github.com/remix-run/remix/issues/2306
+    // 2. https://github.com/remix-run/remix/issues/420
+    // But because we know that in production we only use https,
+    // it's safe to hardcode this here
+    previewImageUrl.protocol = "https:";
+  }
   return [
     { title },
     { name: "description", content: description },
@@ -48,6 +58,13 @@ function reverseChronologicalSorter(
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
+  if (process.env.NODE_ENV === "production") {
+    if (url.hostname.startsWith("www.")) {
+      url.protocol = "https:";
+      url.hostname = url.hostname.replace("www.", "");
+      return redirect(url.toString(), 301);
+    }
+  }
   const mdxModules = import.meta.glob("./_posts.*.mdx", { eager: true });
   const postModules = z.record(z.string(), PostModuleSchema).parse(mdxModules);
   const posts = Object.keys(postModules)
