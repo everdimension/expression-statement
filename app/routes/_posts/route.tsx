@@ -12,6 +12,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
   const slug = url.pathname.slice(1);
   const post = await getPostBySlug(slug, url.origin);
+  if (post.frontmatter.draft) {
+    throw new Response(null, { status: 404, statusText: "Not Found" });
+  }
   return json(post);
 }
 
