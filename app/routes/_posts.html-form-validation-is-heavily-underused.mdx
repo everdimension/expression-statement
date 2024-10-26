@@ -14,7 +14,12 @@ about them. Is this because of some flaw in their design? Let’s explore.
 ## Attributes, methods, and properties
 
 It's easy to disallow empty inputs by adding
-a [`required`](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/required) attribute.
+a [`required`](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/required) attribute:
+
+```jsx
+<input required={true} />
+```
+
 Beyond that, there is a bunch of other ways that you can add constraints to your input. Precisely, there are three ways to do it:
 
 - Using specific `type` attribute values, such as `"email"`, `"number"`, or `"url"`
@@ -28,7 +33,7 @@ is a _method_.
 
 Here's a great write-up that explains the differences between DOM attributes and properties: [https://jakearchibald.com/2024/attributes-vs-properties/](https://jakearchibald.com/2024/attributes-vs-properties/)
 
-## The problem
+## The nuance of an imperative API
 
 The fact that `setCustomValidity` API is exposed only as a method and doesn't have an attribute equivalent
 leads to some terrible ergonomics. I'll show you with an example.
@@ -119,7 +124,7 @@ function Form() {
 
 Great! Now everything works as expected. But at what cost?
 
-## Refactoring ("The Problem"?)
+## The boilerplate problem
 
 Let's look at our clumsy way to validate the initial value:
 
@@ -143,7 +148,8 @@ Ugh! Wouldn't want to write that one each time. Let's think about what's wrong w
 
 This is what happens when you deal with a purely imperative API in a declarative component.
 
-> Unlike validation attributes, `CustomValidity` is a purely imperative API. In other words, there's no input attribute that we can use to set custom validity.
+> Unlike validation attributes, `CustomValidity` is a purely imperative API.
+> In other words, there's no input attribute that we can use to set custom validity.
 
 In fact, I would argue that this is **the main reason for poor adoption of native form validation**. If the API is cumbersome, sometimes it just does not matter how powerful it is.
 
@@ -178,7 +184,8 @@ function Form() {
 Pretty cool! In my opinion, at least. Though you can rightfully argue that this accomplishes only what
 the existing `required` attribute is already capable of. Where's the "power"?
 
-Let me show you, but first, since there's no actual `custom-validity` currently in the HTML Spec,
+Let me show you, but first, since there's no actual `custom-validity` currently
+in the [HTML Spec](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#the-constraint-validation-api),
 let's implement it in userland.
 
 ```jsx
@@ -195,7 +202,9 @@ function Input({ customValidity, ...props }) {
 }
 ```
 
-TODO: Here's a link to more complete implementation
+This will work well for our demo purposes.<br />
+For a production-ready component check out
+a more <a href="https://gist.github.com/everdimension/a5c1e991a8a6b6aab060ce349b37b825" target="_blank" rel="nooopener">complete implementation</a>.
 
 ## The power
 
@@ -219,21 +228,26 @@ First, we create an async function to check whether the username is unique that 
 
 ```js
 export async function verifyUsername(userValue) {
+  // imitate network delay
   await new Promise((r) => setTimeout(r, 3000));
   const value = userValue.trim().toLowerCase();
   if (value === "bad input") {
     throw new Error("Bad Input");
   }
-  return {
-    validationMessage: value === "taken" ? "Username is taken" : "",
-  };
+  const validationMessage = value === "taken" ? "Username is taken" : "";
+  return { validationMessage };
 }
 ```
 
 Next, we'll create a controlled form component and use [react-query](https://tanstack.com/query/latest) to manage to server request when the input value changes:
 
 ```jsx
-function Form({ nameValue, emailValue }) {
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { verifyUsername } from "./verifyUsername";
+import { Input } from "./Input";
+
+function Form() {
   const [value, setValue] = useState("");
   const { data, isLoading, isError } = useQuery({
     queryKey: ["verifyUsername", value],
@@ -264,7 +278,12 @@ Great! We have the setup in place. It consists of two crucial parts:
 
 Let's put those pieces together:
 
-```jsx {9, 16-22}
+```jsx {14, 21-27}
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { verifyUsername } from "./verifyUsername";
+import { Input } from "./Input";
+
 function Form() {
   const [value, setValue] = useState("");
   const { data, isLoading, isError } = useQuery({
@@ -306,7 +325,10 @@ loading, error and success states, _in one attribute_. You can go back to see [t
 This one will be shorter, but also interesting, because it covers dependent input
 fields. Let's implement a form that requires to repeat the entered password:
 
-```jsx {5,22}
+```jsx {8,25}
+import { useState } from "react";
+import { Input } from "./Input";
+
 function ConfirmPasswordForm() {
   const [password, setPassword] = useState("");
   const [confirmedPass, setConfirmedPass] = useState("");
@@ -466,20 +488,22 @@ export function FormSubmitRow({ onReset }) {
 }
 
 export function Input({ defaultCustomValidity, customValidity, ...props }) {
-  const customValidityRef = useRef(defaultCustomValidity);
-  const ref = useRef();
+  const ref = useRef(null);
+  // 1. "Controlled" case
   useEffect(() => {
-    if (customValidityRef.current != null) {
-      const input = ref.current;
-      input.setCustomValidity(customValidityRef.current);
-    }
-  }, []);
-  useEffect(() => {
-    if (customValidity != null) {
-      const input = ref.current;
+    const input = ref.current;
+    if (customValidity != null && input) {
       input.setCustomValidity(customValidity);
     }
   }, [customValidity]);
+  // 2. "Uncontrolled" case
+  const customValidityRef = useRef(defaultCustomValidity);
+  useEffect(() => {
+    const input = ref.current;
+    if (customValidityRef.current && input) {
+      input.setCustomValidity(customValidityRef.current);
+    }
+  }, []);
   return <input ref={ref} {...props} />;
 }
 
@@ -512,7 +536,6 @@ export function ExampleAsyncUsername() {
    */
   const { mutate, data, isPending, isError, error, reset } = useMutation({
     mutationFn: (value) => {
-      console.log("mutationFn", value);
       return verifyUsername(value);
     },
   });
@@ -585,12 +608,8 @@ export function ExampleAsyncUsername() {
         </div>
         <FormSubmitRow
           onReset={() => {
-            console.log("onreset", { queryClient });
-            console.log("remove()");
             setValueState("");
             reset();
-            // queryClient.resetQueries({ queryKey: [queryKey] });
-            // queryClient.removeQueries({ queryKey: [queryKey] });
           }}
         />
         {isPending ? (
@@ -635,6 +654,7 @@ export function ConfirmPasswordForm() {
           id={id1}
           type="password"
           name="password"
+          placeholder="password"
           required={true}
           value={fd.get("password") || ""}
           onChange={handleChange}
@@ -643,6 +663,7 @@ export function ConfirmPasswordForm() {
           id={id2}
           type="password"
           name="confirmedPassword"
+          placeholder="repeat password"
           required={true}
           value={fd.get("confirmedPassword") || ""}
           customValidity={matches ? "" : "Password must match"}
