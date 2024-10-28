@@ -79,7 +79,6 @@ const ONELINE_TITLE = false;
 
 export default function Index() {
   const { posts } = useLoaderData<typeof loader>();
-  console.log({ posts });
   return (
     <Layout>
       <div
