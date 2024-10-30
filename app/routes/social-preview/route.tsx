@@ -50,7 +50,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const slug = url.searchParams.get("post");
   invariant(slug, "post param is required");
   const imagePath = images.get(slug);
-  console.log({ imagePath, slug });
   if (imagePath) {
     const imageUrl = new URL(imagePath, url.origin);
     const imageBuffer = await fetch(imageUrl).then((res) => res.body);
