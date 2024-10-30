@@ -1,13 +1,14 @@
 import { HStack, Spacer, VStack } from "structure-kit";
 import { Layout } from "~/components/Layout";
 import { Navbar } from "~/components/Navbar";
+import profilePic from "../assets/profile-pic.jpg";
 
 export function TwitterMedia() {
   return (
     <HStack gap={8} alignItems="center">
       <img
         style={{ width: 32, height: 32, borderRadius: "50%" }}
-        src="https://pbs.twimg.com/profile_images/826440416371302400/HosO7Uze_400x400.jpg"
+        src={profilePic}
         alt=""
       />
       <div>

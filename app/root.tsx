@@ -13,7 +13,7 @@ import stylesHref from "./styles/main.css?url";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesHref },
-  { rel: "icon", href: "/logo-from-center.svg" },
+  { rel: "icon", href: "/logo-from-center.svg", type: "image/svg+xml" },
 ];
 
 export function loader({ request }: LoaderFunctionArgs) {
