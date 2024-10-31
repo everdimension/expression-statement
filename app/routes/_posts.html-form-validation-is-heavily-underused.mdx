@@ -94,7 +94,7 @@ function Form() {
   useLayoutEffect(() => {
     // Make input invalid on initial render if it's empty
     const input = ref.current;
-    const empty = input.value !== "";
+    const empty = input.value === "";
     input.setCustomValidity(empty ? "Initial message: input is empty" : "");
   }, []);
 
