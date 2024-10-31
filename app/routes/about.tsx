@@ -7,6 +7,7 @@ export function TwitterMedia() {
   return (
     <HStack gap={8} alignItems="center">
       <img
+        loading="lazy"
         style={{ width: 32, height: 32, borderRadius: "50%" }}
         src={profilePic}
         alt=""
