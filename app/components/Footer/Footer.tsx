@@ -107,6 +107,10 @@ export function Footer() {
         <Link to="/about" style={{ color: "var(--link)" }}>
           About
         </Link>
+        {" · "}
+        <a href="/rss.xml" style={{ color: "var(--link)" }}>
+          RSS
+        </a>
       </div>
       <div>
         Expression Statement, <Today />

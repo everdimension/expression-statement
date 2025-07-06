@@ -3,16 +3,15 @@ import {
   type LoaderFunctionArgs,
   type MetaFunction,
 } from "@remix-run/node";
-import { z } from "zod";
 import invariant from "tiny-invariant";
 import { Link, useLoaderData } from "@remix-run/react";
 import { Layout } from "~/components/Layout";
 import s from "../styles/styles.module.css";
-import { getPostObject, PostModuleSchema } from "./_posts/shared/getPostObject";
 import mainPagePreviewSrc from "./social-preview/pre-built/main-page-preview.png";
+import { getAllPosts } from "./_posts/shared/getAllPosts";
 
 // const subtitle = 'Software, UX Design and the Web platform'
-const subtitle = "Software, UX Design and the Web";
+export const subtitle = "Software, UX Design and the Web";
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   const title = "Expression Statement";
@@ -47,31 +46,9 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
   ];
 };
 
-function reverseChronologicalSorter(
-  a: { date?: string },
-  b: { date?: string }
-) {
-  const now = Date.now();
-  return new Date(b.date || now).getTime() - new Date(a.date || now).getTime();
-}
-
 export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
-  const mdxModules = import.meta.glob("./_posts.*.mdx", { eager: true });
-  const postModules = z.record(z.string(), PostModuleSchema).parse(mdxModules);
-  const posts = Object.keys(postModules)
-    .reverse()
-    .map((key) => ({ pathname: key, postModule: postModules[key] }))
-    .filter(({ postModule }) => postModule.frontmatter.draft !== true)
-    .map(({ pathname, postModule }) => {
-      return getPostObject({
-        pathname,
-        postModule,
-        origin: url.origin,
-      });
-    })
-    .sort(reverseChronologicalSorter);
-
+  const posts = getAllPosts();
   return json({ posts, origin: url.origin });
 }
 
