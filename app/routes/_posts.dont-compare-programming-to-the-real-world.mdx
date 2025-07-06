@@ -1,0 +1,65 @@
+---
+title: "Don’t compare programming to the real world"
+date: 2025-07-07
+---
+
+export const excerpt =
+  "One of the things that programmers love to do is to find analogies between programming and the real world.";
+
+{excerpt}
+
+The comparisons of classes and objects to "car factories" and "cookie ovens"
+never sat right with me. But not only those are poor educational techniques, there are much larger misleading analogies. It's often that you hear how a software system is composed of parts similar to those in an assembly line, and that the way software architecture works best is by following the same organizational practices that take place in other engineering fields. I find this way of viewing these fields to be fundamentally wrong.
+
+Among the many definitions of software architecture, here's one that, in my opinion, captures its essence:
+
+> Software Architecture is about creating constraints and drawing lines between components of your system
+
+But why would you create constraints? Aren't constraints, by definition, something limiting? Something you don't want to have?
+
+In the real world, we're all about breaking the limits, finding freedom, _defying gravity_. We want to do these things because we can't.
+
+In programming, it's the other way around. You can, in a sense, defy gravity. You can do things that you definitely shouldn't.
+
+You can mix concerns. You can mix them so easily it's just mad.
+
+Here are some stupid, insane, but absolutely possible examples.
+
+- Can you update the color of an html button inside a function that
+  authenticates the user? Oh yes, and you probably even did (that was a long time ago, no worries).
+
+- Can you write to a file system while you're walking the DOM-tree in search of a child node? Trivial!
+
+- Can you send out an email newsletter inside an algorithm that compares strings of text? That's dumb! But so easy.
+
+- Can you send a push notification to your users as you're adding a record to your database?
+  Oh wait, isn't that literally what some apps do?
+
+- Can you unlock an achievement for killing 10 enemies in a row inside your low-level game engine code that's responsible for collisions? [You know you can](https://gameprogrammingpatterns.com/observer.html#achievement-unlocked).
+
+<blockquote style={{ marginLeft: 0 }}>
+  Yes, all of the above are instances of a popular anti-pattern which is the
+  [mixing of concerns](https://en.wikipedia.org/wiki/Separation_of_concerns).
+  But my point is about something different. It's that these problems don't
+  really have analogies in the physical world.
+</blockquote>
+
+In real world a similar example would be something like making your car's internal combustion engine also responsible for lowering your car windows.
+Can you imagine such a design? Where a car engine has parts that help put a window up and down? Well, even if it were possible,
+someone would have to work very hard to produce such a thing in a real car.
+
+In a manufacturing process, parts are discrete because of natural limitations. Materials have physical properties that create boundaries. You can't accidentally make your car engine brew coffee, even if the heat from it can definitely boil water.
+
+Well, in programming, you have to work very hard NOT to produce a coffee maker that also enables your house security system.
+
+In software, there are **no natural boundaries**. Every function can call every other function and modify any state unless someone made sure to put in some work to make it impossible.
+
+It's ironic, in a way, that software developers work hard to recreate the constraints that the physical engineers can't escape.
+
+I'm not here to say that one field is somehow harder or easier than the other.
+
+I'm here to say that to achieve great results in these fields, you have to sometimes chase completely opposite goals.
+
+In engineering, the contraints are there from the start. You aim to remove them. To erase the borders.
+
+In software architecture, creating the right borders is the only way to create a maintainable system.
