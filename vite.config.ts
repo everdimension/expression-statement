@@ -7,6 +7,9 @@ import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import remarkSmartyPants from "remark-smartypants";
 import rehypeSlug from "rehype-slug";
 import rehypePrettyCode, { type Options } from "rehype-pretty-code";
+import rehypeExternalLinks, {
+  type Options as ExternalLinksOptions,
+} from "rehype-external-links";
 import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 
@@ -31,7 +34,17 @@ export default defineConfig({
         remarkMdxFrontmatter,
         remarkSmartyPants,
       ],
-      rehypePlugins: [rehypeSlug, [rehypePrettyCode, options]],
+      rehypePlugins: [
+        rehypeSlug,
+        [rehypePrettyCode, options],
+        [
+          rehypeExternalLinks,
+          {
+            target: "_blank",
+            rel: ["noopener"],
+          } satisfies ExternalLinksOptions,
+        ],
+      ],
     }),
     remix(),
     tsconfigPaths(),
