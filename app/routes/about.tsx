@@ -2,25 +2,46 @@ import { HStack, Spacer, VStack } from "structure-kit";
 import { Layout } from "~/components/Layout";
 import { Navbar } from "~/components/Navbar";
 import profilePic from "../assets/profile-pic.jpg";
+import { useId } from "react";
 
 export function TwitterMedia() {
+  const handleLabelId = useId();
   return (
-    <HStack gap={8} alignItems="center">
-      <img
-        loading="lazy"
-        style={{ width: 32, height: 32, borderRadius: "50%" }}
-        src={profilePic}
-        alt=""
-      />
-      <div>
+    <HStack gap={12} alignItems="center">
+      <a
+        href="https://twitter.com/everdimension"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-labelledby={handleLabelId}
+        style={{ borderRadius: "50%" }}
+      >
+        <img
+          loading="lazy"
+          style={{
+            display: "block",
+            width: 40,
+            height: 40,
+            borderRadius: "50%",
+            border: "2px solid var(--neutral-3)",
+          }}
+          src={profilePic}
+          alt=""
+        />
+      </a>
+      <div style={{ lineHeight: 1.3 }}>
         <a
+          id={handleLabelId}
           href="https://twitter.com/everdimension"
           target="_blank"
           rel="noopener noreferrer"
-          style={{ fontStyle: "italic" }}
+          className="no-underline hover:underline"
+          style={{ color: "inherit", fontSize: "0.875rem", fontWeight: 500 }}
         >
           @everdimension
         </a>
+        <div style={{ color: "var(--neutral-6)", fontSize: "0.8rem" }}>
+          Follow me on X
+        </div>
       </div>
     </HStack>
   );
