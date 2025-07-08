@@ -1,3 +1,5 @@
+import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
+import { data, redirect } from "@remix-run/node";
 import {
   Links,
   Meta,
@@ -5,10 +7,12 @@ import {
   Scripts,
   ScrollRestoration,
   isRouteErrorResponse,
+  useLoaderData,
   useRouteError,
 } from "@remix-run/react";
-import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
-import { redirect } from "@remix-run/node";
+import { UMAMI_WEBSITE_ID } from "./analytics/config";
+import { trackIncomingRequest } from "./analytics/send";
+import { parseDistinctIdCookie } from "./sessions.server";
 import stylesHref from "./styles/main.css?url";
 
 export const links: LinksFunction = () => [
@@ -16,19 +20,34 @@ export const links: LinksFunction = () => [
   { rel: "icon", href: "/logo-from-center.svg", type: "image/svg+xml" },
 ];
 
-export function loader({ request }: LoaderFunctionArgs) {
+function redirectFromWww(request: Request) {
   const url = new URL(request.url);
   if (process.env.NODE_ENV === "production") {
     if (url.hostname.startsWith("www.")) {
       url.protocol = "https:";
       url.hostname = url.hostname.replace("www.", "");
-      return redirect(url.toString(), 301);
+      throw redirect(url.toString(), 301);
     }
   }
-  return null;
+}
+
+export async function loader({ request }: LoaderFunctionArgs) {
+  redirectFromWww(request);
+  const { cookieToSet, distinctId } = await parseDistinctIdCookie(request);
+  trackIncomingRequest(request, { distinctId });
+  return data(
+    {
+      distinctId,
+      websiteId: UMAMI_WEBSITE_ID,
+      NODE_ENV: process.env.NODE_ENV,
+      sendEvents: process.env.NODE_ENV === "production",
+    },
+    { headers: cookieToSet ? { "Set-Cookie": cookieToSet } : undefined }
+  );
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
+  const clientData = useLoaderData<typeof loader>();
   return (
     <html lang="en">
       <head>
@@ -40,6 +59,29 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <body>
         {children}
         <ScrollRestoration />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.APP_DATA = ${JSON.stringify(clientData)}`,
+          }}
+        />
+        {clientData.sendEvents ? (
+          <>
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `window.beforeSendHandler = function(type, payload) {
+                  payload.id = APP_DATA.distinctId;
+                  return payload;
+                }`,
+              }}
+            />
+            <script
+              defer
+              src="/data.js"
+              data-website-id={clientData.websiteId}
+              data-before-send="beforeSendHandler"
+            />
+          </>
+        ) : null}
         <Scripts />
       </body>
     </html>

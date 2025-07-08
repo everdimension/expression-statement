@@ -1,5 +1,5 @@
 import {
-  json,
+  data,
   type LoaderFunctionArgs,
   type MetaFunction,
 } from "@remix-run/node";
@@ -49,7 +49,7 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
   const posts = getAllPosts();
-  return json({ posts, origin: url.origin });
+  return data({ posts, origin: url.origin });
 }
 
 const ONELINE_TITLE = false;

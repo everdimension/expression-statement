@@ -1,4 +1,4 @@
-import { LoaderFunctionArgs, MetaFunction, json } from "@remix-run/node";
+import { LoaderFunctionArgs, MetaFunction, data } from "@remix-run/node";
 import { Outlet, useLoaderData } from "@remix-run/react";
 import { Spacer } from "structure-kit";
 import { Article } from "./Article";
@@ -23,7 +23,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   if (post.frontmatter.draft) {
     throw new Response(null, { status: 404, statusText: "Not Found" });
   }
-  return json({ ...post, origin: getOwnOrigin(url) });
+  return data({ ...post, origin: getOwnOrigin(url) });
 }
 
 export const meta: MetaFunction<typeof loader> = ({ data, location }) => {

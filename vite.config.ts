@@ -25,6 +25,12 @@ const options: Options = {
   },
 };
 
+declare module "@remix-run/node" {
+  interface Future {
+    v3_singleFetch: true;
+  }
+}
+
 export default defineConfig({
   plugins: [
     // Inspect(),
@@ -46,7 +52,7 @@ export default defineConfig({
         ],
       ],
     }),
-    remix(),
+    remix({ future: { v3_singleFetch: true } }),
     tsconfigPaths(),
   ],
 });
