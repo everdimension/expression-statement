@@ -3,16 +3,10 @@
 
 body {
   --font-weight-body: 400;
-  -webkit-font-smoothing: antialiased;
   font-family: Inter, system-ui, sans-serif;
   font-size: 1.125rem;
   line-height: 1.5;
   font-weight: var(--font-weight-body);
-}
-
-p b,
-p strong {
-  /* font-weight: 600; */
 }
 
 article a {
@@ -26,6 +20,7 @@ h4,
 h5,
 h6,
 .heading {
+  -webkit-font-smoothing: antialiased;
   font-family: Inter;
   line-height: 1;
   font-weight: 800;
