@@ -77,9 +77,9 @@ export default function Post() {
               {title}
             </h1>
             {date ? (
-              <time style={{ color: "var(--neutral-5)", fontSize: "0.8em" }}>
+              <time className="meta-date">
                 {new Intl.DateTimeFormat("en", {
-                  month: "long",
+                  month: "short",
                   day: "numeric",
                   year: "numeric",
                 }).format(new Date(date))}

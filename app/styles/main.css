@@ -34,7 +34,6 @@ body {
 }
 
 body {
-  font-family: Inter, system-ui, sans-serif;
   background-color: light-dark(oklch(98% 0% 68deg), oklch(22% 0% 68deg));
 }
 
@@ -52,11 +51,6 @@ h4,
 h5,
 h6 {
   margin: 0;
-}
-
-.link-heading {
-  /* color: var(--text-12); */
-  /* color: var(--) */
 }
 
 .link-heading:visited {

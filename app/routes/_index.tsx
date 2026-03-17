@@ -109,9 +109,9 @@ export default function Index() {
               <p style={{ margin: 0 }}>
                 {post.frontmatter.description || post.excerpt}
               </p>
-              <time style={{ color: "var(--neutral-5)", fontSize: "0.8em" }}>
+              <time className="meta-date">
                 {new Intl.DateTimeFormat("en", {
-                  month: "long",
+                  month: "short",
                   day: "numeric",
                   year: "numeric",
                 }).format(new Date(post.date || Date.now()))}

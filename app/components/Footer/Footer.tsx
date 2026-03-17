@@ -101,6 +101,7 @@ export function Footer() {
         paddingBlock: "2rem",
         borderTop: "1px solid var(--neutral-2)",
         fontWeight: 800,
+        fontFamily: 'Inter',
       }}
     >
       <div style={{ float: "right" /* Yea! Challenge: guess why. */ }}>

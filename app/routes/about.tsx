@@ -51,50 +51,49 @@ export default function About() {
   return (
     <Layout>
       <Navbar />
-      <VStack gap={20}>
+      <main>
         <h1>About</h1>
+        <Spacer height={20} />
 
-        <main>
-          <div>
-            <strong style={{ fontWeight: "var(--font-weight-body)" }}>
-              Expression Statement
-            </strong>{" "}
-            is about Software, User Experience Design and the Web Platform
-          </div>
+        <div>
+          <strong style={{ fontWeight: "var(--font-weight-body)" }}>
+            Expression Statement
+          </strong>{" "}
+          is about Software, User Experience Design and the Web Platform
+        </div>
 
-          <Spacer height={40} />
-          <h2>Contacts</h2>
-          <Spacer height={20} />
-          <div style={{ display: "grid", gap: 8 }}>
-            <HStack gap={12} alignItems="baseline">
-              <div>Twitter:</div>
-              <div>
-                <a
-                  href="https://twitter.com/everdimension"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ fontStyle: "italic" }}
-                >
-                  x.com/everdimension
-                </a>
-              </div>
-            </HStack>
-            <HStack gap={12} alignItems="baseline">
-              <div>Github:</div>
-              <div>
-                <a
-                  href="https://github.com/everdimension"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ fontStyle: "italic" }}
-                >
-                  github.com/everdimension
-                </a>
-              </div>
-            </HStack>
-          </div>
-        </main>
-      </VStack>
+        <Spacer height={40} />
+        <h2>Contacts</h2>
+        <Spacer height={12} />
+        <div style={{ display: "grid", gap: 8 }}>
+          <HStack gap={12} alignItems="baseline">
+            <div>Twitter:</div>
+            <div>
+              <a
+                href="https://twitter.com/everdimension"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ fontStyle: "italic" }}
+              >
+                x.com/everdimension
+              </a>
+            </div>
+          </HStack>
+          <HStack gap={12} alignItems="baseline">
+            <div>Github:</div>
+            <div>
+              <a
+                href="https://github.com/everdimension"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ fontStyle: "italic" }}
+              >
+                github.com/everdimension
+              </a>
+            </div>
+          </HStack>
+        </div>
+      </main>
     </Layout>
   );
 }

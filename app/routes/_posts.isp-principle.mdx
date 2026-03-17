@@ -1,0 +1,105 @@
+---
+title: Interface Segregation Principle In Fronend
+draft: true
+---
+
+This is a great question! I used to question this myself a lot, too.
+
+So the first thing you have to remember is that most of the Design Patterns and SOLID principles make sense only when they are applied to typed languages. This is crucial to understanding them and a source of lots of confusion for those trying to apply those principles to Javascript.
+
+When I say the principle makes no sense in a dynamic language, I literally mean it makes no sense. The example in the article is actually great at showing this.
+
+```
+const Book = ({ book }) => {
+  return (
+    <div>
+      <img src={book.image} alt="Book image" />
+      <p>{book.title}</p>
+      <p>{book.author}</p>
+    </div>
+  );
+};
+```
+
+The author goes to say the following:
+
+> "By giving it book as a props, we end up giving it more than the component actually need"
+
+But we really don't! Because everything is dynamically typed, there is no "Book" type here and the component literally uses *only* what it needs! So in a sense, we're following the ISP principle automatically here.
+
+  
+The problem becomes noticeable if we switch to TypeScript:
+
+```
+type Publisher = { ... }  
+  
+interface Book {  
+  image: string;  
+  title: string;  
+  author: string;  
+  isbn: string;  
+  publisher: Publisher;  
+  publishYear: number;  
+}  
+  
+const BookComponent = ({ book }: { Book }) => {  
+  return (  
+    <div>  
+      <img src={book.image} alt="Book image" />  
+      <p>{book.title}</p>  
+      <p>{book.author}</p>  
+    </div>  
+  );  
+};  
+```
+
+Now it can be argued that component is asking for more than it needs! It asks for a `Book` object, but uses only a few of the properties of it.  
+
+
+Why is this a problem?  
+In most cases, it's not! You're probably receiving your `Book` objects from your backend and then passing them to components to render some UI. It makes a lot of sense to pass the `Book` type around as your components are designed to display it. It's not only about less typing, it's about meaning. Look, your component is even named `BookComponent`!
+
+But what happens when you have a page that displays "the most anticipated books of next year"? It's not that hard to imagine that we might want to display books that aren't published yet. We maybe know their author, their title, even their cover, but the book doesn't have an approved publisher yet, it doesn't have a definite "publish year", it doesn't have and ISBN.
+
+And yet, your designer wants to reuse the `BookComponent` to show such books.
+
+And now you have a problem. The `BookComponent` seems like the perfect fit, and yet you will have a compiler error if you pass to it an object that only has `{ image, title, author }`.
+
+This is a very unpleasant situation: you have a component that you know will work, and yet you can't use it purely because the types won't fit. You might even start trying to shove in some mock values, at which point it will become a complete anti-pattern:
+
+```
+<BookComponent
+  book={{
+    image: unpublishedBook.image,
+    title: unpublishedBook.title,
+    author: unpublishedBook.author,
+    isbn: "", // a mock value to satisfy types
+    publisher: {}, // a mock value to satisfy types
+    publishYear: 2000, // a mock value to satisfy types
+  }}
+/>
+```
+
+This is what ISP is about. 
+
+As for how to solve this problem, there are different approaches, but all of them are about restricting what component is asking for.
+
+The simplest code change would be:
+
+```
+function BookComponent({
+  book,
+}: {
+  book: {
+    image: string;
+    title: string;
+    author: string;
+  };
+}) {}
+```
+
+This way you will not have to update the existing call sites of this component.
+
+The next reasonable question is – should you write your types like this by default and never describe component props using interfaces such as `Book` (domain entities)?
+
+I think unless your component looks like it can clearly be reused in other UI contexts, you should be ok with describing your props using domain entities. Refactor into the latter solution when you need to.
