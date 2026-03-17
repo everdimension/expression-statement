@@ -29,6 +29,11 @@
   --surface-2: var(--neutral-2);
   --surface-3: var(--neutral-3);
   --surface-4: var(--neutral-4);
+
+  --label: CanvasText;
+  --secondary-label: var(--neutral-6);
+  --tertiary-label: var(--neutral-5);
+  --separator: var(--neutral-3);
 }
 
 @media (prefers-color-scheme: dark) {
