@@ -1,4 +1,4 @@
-import { HStack, Spacer, VStack } from "structure-kit";
+import { HStack, Spacer } from "structure-kit";
 import { Layout } from "~/components/Layout";
 import { Navbar } from "~/components/Navbar";
 import profilePic from "../assets/profile-pic.jpg";
@@ -52,47 +52,129 @@ export default function About() {
     <Layout>
       <Navbar />
       <main>
-        <h1>About</h1>
-        <Spacer height={20} />
-
-        <div>
-          <strong style={{ fontWeight: "var(--font-weight-body)" }}>
-            Expression Statement
-          </strong>{" "}
-          is about Software, User Experience Design and the Web Platform
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 24,
+            marginBottom: 40,
+          }}
+        >
+          <img
+            src={profilePic}
+            alt=""
+            style={{
+              width: 80,
+              height: 80,
+              borderRadius: "50%",
+              border: "3px solid var(--neutral-3)",
+              flexShrink: 0,
+            }}
+          />
+          <h1 style={{ fontSize: "2.5rem", lineHeight: 1.1 }}>About</h1>
         </div>
 
+        <p style={{ fontSize: "1.25rem", lineHeight: 1.7, marginTop: 0 }}>
+          I'm Yaroslav. I've been building for the web for over 12 years.
+          Excited about obscure browser APIs.
+        </p>
+
+        <p style={{ lineHeight: 1.7 }}>
+          For the past 6 years I've been a software engineer at{" "}
+          <a
+            href="https://zerion.io/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Zerion
+          </a>
+          , where I created a crypto wallet browser extension — one of the
+          best UIs among crypto wallets. Learned a ton about extension
+          architecture and browser security, and co-authored{" "}
+          <a
+            href="https://eips.ethereum.org/EIPS/eip-6963"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            a web standard
+          </a>{" "}
+          along the way.
+        </p>
+
+        <p style={{ lineHeight: 1.7 }}>
+          I study interaction design. Accessibility, keyboard navigation,
+          semantics, building for both casual and power users. I think a
+          lot about the right architecture for complex interfaces and
+          making the web feel like an app.
+        </p>
+
         <Spacer height={40} />
-        <h2>Contacts</h2>
-        <Spacer height={12} />
-        <div style={{ display: "grid", gap: 8 }}>
-          <HStack gap={12} alignItems="baseline">
-            <div>Twitter:</div>
-            <div>
+
+        <hr
+          style={{
+            border: "none",
+            borderTop: "1px solid var(--neutral-3)",
+          }}
+        />
+
+        <Spacer height={40} />
+
+        <section>
+          <h2
+            style={{
+              fontSize: "0.75rem",
+              fontFamily: "Inter",
+              textTransform: "uppercase",
+              letterSpacing: "0.12em",
+              color: "var(--neutral-5)",
+              fontWeight: 600,
+            }}
+          >
+            Elsewhere
+          </h2>
+          <Spacer height={16} />
+          <div style={{ display: "grid", gap: 12, lineHeight: 1.7 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "7em 1fr", gap: 8 }}>
+              <span style={{ color: "var(--neutral-6)" }}>X</span>
               <a
                 href="https://twitter.com/everdimension"
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ fontStyle: "italic" }}
               >
-                x.com/everdimension
+                @everdimension
               </a>
             </div>
-          </HStack>
-          <HStack gap={12} alignItems="baseline">
-            <div>Github:</div>
-            <div>
+            <div style={{ display: "grid", gridTemplateColumns: "7em 1fr", gap: 8 }}>
+              <span style={{ color: "var(--neutral-6)" }}>GitHub</span>
               <a
                 href="https://github.com/everdimension"
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ fontStyle: "italic" }}
               >
-                github.com/everdimension
+                everdimension
               </a>
             </div>
-          </HStack>
-        </div>
+            <div style={{ display: "grid", gridTemplateColumns: "7em 1fr", gap: 8 }}>
+              <span style={{ color: "var(--neutral-6)" }}>Talks</span>
+              <div style={{ display: "flex", gap: 16 }}>
+                <a
+                  href="https://youtu.be/9S8OeCkcUSM"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  MoscowJS 2018
+                </a>
+                <a
+                  href="https://youtu.be/omeYq2BGYTU"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  MoscowJS 2020
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
       </main>
     </Layout>
   );
