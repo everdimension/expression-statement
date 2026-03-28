@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yaroslav Sergievskiy - CV</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      line-height: 1.5;
+      color: #333;
+      max-width: 850px;
+      margin: 0 auto;
+      padding: 40px 30px;
+      font-size: 14px;
+    }
+    a { color: #2a9d8f; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    h1 { font-size: 28px; margin-bottom: 4px; }
+    h2 { font-size: 18px; margin-top: 28px; margin-bottom: 12px; border-bottom: 2px solid #2a9d8f; padding-bottom: 4px; }
+    h3 { font-size: 16px; margin-bottom: 4px; }
+    .subtitle { color: #666; font-size: 15px; margin-bottom: 4px; }
+    .email { margin-bottom: 16px; }
+    .summary { margin-bottom: 20px; }
+    .links { display: flex; gap: 40px; margin-bottom: 10px; flex-wrap: wrap; }
+    .links-section { }
+    .links-section strong { display: block; margin-bottom: 4px; }
+    .job { margin-bottom: 24px; }
+    .job-header { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; }
+    .job-title { color: #2a9d8f; font-weight: 600; }
+    .job-date { color: #666; font-size: 13px; }
+    .job-company { font-size: 13px; color: #666; margin-bottom: 8px; }
+    .job-role { font-weight: 600; margin-bottom: 8px; }
+    .job-description { margin-bottom: 10px; }
+    ul { margin-left: 20px; margin-bottom: 10px; }
+    li { margin-bottom: 4px; }
+    .tech-stack { font-size: 13px; color: #555; }
+    .tech-stack strong { color: #333; }
+    .competencies { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 10px; }
+    .competency h4 { font-size: 13px; margin-bottom: 6px; color: #2a9d8f; }
+    .competency ul { margin-left: 16px; font-size: 13px; }
+    .skills-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 40px; }
+    .skills-grid li { margin-bottom: 2px; }
+    @media print {
+      body { padding: 20px; }
+      a { color: #333; }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Yaroslav Sergievskiy</h1>
+  <div class="subtitle">Software Engineer / Staff Engineer</div>
+  <div class="email"><a href="mailto:everdimension@gmail.com">everdimension@gmail.com</a> · <a href="https://www.linkedin.com/in/yaroslav-sergievsky/">linkedin.com/in/yaroslav-sergievsky</a> · US, Eastern Time</div>
+
+  <div class="summary">
+    <p>I am a UI engineer with 12+ years of experience and an expert at building for the Web. I specialize in developing long-living maintainable apps with fast and polished User Interfaces, while taking end-to-end ownership of the systems behind them.</p>
+    <br>
+    <p>It's my responsibility to follow the Web Platform best practices in order to deliver semantically correct, accessible, and fully keyboard-navigable Web Applications. Beyond the UI layer, I regularly design and implement backend APIs and services that power web and mobile clients, and work closely with product and platform teams to ensure scalability, performance, and clean integration boundaries.</p>
+    <br>
+    <p>While I develop mostly in React, I actively follow and form opinions on emerging UI paradigms. Currently exploring Ripple, Solid, and Remix 3, and building my own agentic coding loops.</p>
+  </div>
+
+  <div class="links">
+    <div class="links-section">
+      <strong>Writing:</strong>
+      <a href="https://expressionstatement.com">expressionstatement.com</a><br>
+      <a href="https://medium.com/@everdimension">medium.com/@everdimension</a>
+    </div>
+    <div class="links-section">
+      <strong>Github:</strong>
+      <a href="https://github.com/everdimension">github.com/everdimension</a>
+    </div>
+    <div class="links-section">
+      <strong>Speaking:</strong>
+      <a href="https://youtu.be/9S8OeCkcUSM">MoscowJS at Yandex, 2018</a><br>
+      <a href="https://youtu.be/omeYq2BGYTU">MoscowJS 47, 2020</a>
+    </div>
+  </div>
+
+  <h2>Experience</h2>
+
+  <div class="job">
+    <div class="job-header">
+      <h3 class="job-title">Zerion</h3>
+      <span class="job-date">February 2020 - Present</span>
+    </div>
+    <div class="job-company"><a href="https://zerion.io/">https://zerion.io/</a></div>
+    <div class="job-role">Lead Software Engineer | Founding Engineer (Wallet & Web)</div>
+
+    <ul>
+      <li><strong>Created Zerion Wallet Extension:</strong> Owned the end-to-end architecture, security layer (private key encryption via SubtleCrypto, ensuring non-custodial private key safety for 200k+ users), and dapp communication protocol. Scaled the product from zero to one, competing directly with MetaMask and Rabby.</li>
+      <li><strong>Industry Authority (EIP-6963):</strong> Co-authored EIP-6963 (Multi-Injected Provider Discovery) alongside engineers from MetaMask and WalletConnect to standardize wallet-to-web interactions.</li>
+      <li><strong>Full-Stack & Infrastructure Leadership:</strong> Designed and owned data contracts for high-traffic portfolio and swap endpoints. Scaled CI/CD infrastructure on Google Cloud, automating isolated preview domains for rapid cross-team testing. Responsible for hiring Frontend Engineers.</li>
+      <li><strong>Business Impact:</strong> Helped the company raise Series A and B rounds.</li>
+    </ul>
+
+    <p class="tech-stack"><strong>Tech Stack:</strong> TypeScript, React, React Query, ethers.js, WebSockets, SubtleCrypto, Playwright.</p>
+
+    <p style="margin-top: 12px;"><strong>Source Code:</strong> <a href="https://github.com/zeriontech/zerion-wallet-extension/">github.com/zeriontech/zerion-wallet-extension/</a></p>
+    <p><strong>Open Source:</strong> <a href="https://github.com/zeriontech/defi-sdk-js">defi-sdk-js</a> — WebSocket data-fetching library</p>
+  </div>
+
+  <div class="job">
+    <div class="job-header">
+      <h3 class="job-title">Chatfuel</h3>
+      <span class="job-date">September 2018 - September 2019</span>
+    </div>
+    <div class="job-company"><a href="https://chatfuel.com/">https://chatfuel.com/</a></div>
+    <div class="job-role">Senior Frontend Engineer</div>
+
+    <p class="job-description">A UI for creating chatbots for Facebook Messenger.</p>
+    <ul>
+      <li><strong>Performance:</strong> Rewrote the live chat feature to handle very large dialogs. Implemented bidirectional virtualization with binary search, turning a crashing UI into a snappy experience.</li>
+      <li><strong>Architecture:</strong> Created a UI kit / pattern library used across the project. Drove REST to GraphQL migration.</li>
+      <li><strong>Accessibility:</strong> Championed and implemented a11y best practices across the team.</li>
+    </ul>
+
+    <p class="tech-stack"><strong>Tech Stack:</strong> React, TypeScript, GraphQL (Apollo, Backend-for-Frontend), React Router, Jest, Mocha, Puppeteer.</p>
+  </div>
+
+  <div class="job">
+    <div class="job-header">
+      <h3 class="job-title">Exante</h3>
+      <span class="job-date">April 2016 - September 2018</span>
+    </div>
+    <div class="job-company"><a href="https://exante.eu/">https://exante.eu/</a></div>
+    <div class="job-role">Senior Developer | Performance Architect</div>
+
+    <ul>
+      <li><strong>High-Throughput Trading UI:</strong> Refactored real-time trading UI to maintain 60fps under 200+ WebSocket messages/sec (peak) via Web Workers.</li>
+      <li><strong>Performance Optimization:</strong> Reduced initial load times by offloading heavy calculations to Web Workers and implementing sophisticated client-side caching with IndexedDB.</li>
+    </ul>
+
+    <p class="tech-stack"><strong>Tech Stack:</strong> React, Redux, TypeScript, WebSockets, IndexedDB, TradingView integration.</p>
+  </div>
+
+  <div class="job">
+    <div class="job-header">
+      <h3 class="job-title">Mainpeople.com</h3>
+      <span class="job-date">January 2015 - April 2016</span>
+    </div>
+    <div class="job-company"><a href="https://mainpeople.com/">https://mainpeople.com/</a></div>
+    <div class="job-role">Software Engineer, Frontend</div>
+
+    <p class="job-description">A social network with microtransactions. Main challenge: implementing 3D-Secure microtransactions into an infinite-scrolling social feed.</p>
+
+    <p class="tech-stack"><strong>Tech Stack:</strong> Angular.js, React, Flux, jQuery.</p>
+  </div>
+
+  <div class="job">
+    <div class="job-header">
+      <h3 class="job-title">FlyMe</h3>
+      <span class="job-date">July 2013 - January 2015</span>
+    </div>
+    <div class="job-role">Software Engineer</div>
+
+    <p class="job-description">Airline ticket search system. Built a Single Page App handling large ticket and airline datasets. Implemented 3D-Secure payments, complex page transition animations, and website internationalization.</p>
+
+    <p class="tech-stack"><strong>Tech Stack:</strong> Angular.js, jQuery, Gulp, Less.</p>
+  </div>
+  
+  <h2>Core Competencies</h2>
+  <div class="competencies">
+    <div class="competency">
+      <h4>Architecture</h4>
+      <ul>
+        <li>Scalable Frontend Systems</li>
+        <li>Protocol Design</li>
+        <li>Browser Extension Security</li>
+      </ul>
+    </div>
+    <div class="competency">
+      <h4>Performance</h4>
+      <ul>
+        <li>Real-time Data Visualization</li>
+        <li>Sub-100ms UI Latency</li>
+        <li>Low-level Web Platform APIs</li>
+      </ul>
+    </div>
+    <div class="competency">
+      <h4>Leadership</h4>
+      <ul>
+        <li>Technical Vision</li>
+        <li>Hiring High-Output Teams</li>
+        <li>Open Source Contributions</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>Skills and Technologies</h2>
+  <ul class="skills-grid">
+    <li>JavaScript / TypeScript</li>
+    <li>AI Tooling & Agentic Systems</li>
+    <li>Software Architecture & Design Patterns</li>
+    <li>React</li>
+    <li>Fullstack Development</li>
+    <li>Bundlers: Vite, Rollup, Webpack, Parcel</li>
+    <li>CI/CD, Cloud Infrastructure (Google Cloud)</li>
+    <li>React Query, React Router, Immer.js</li>
+    <li>SubtleCrypto / Web Crypto API</li>
+    <li>ethers.js, web3.js, Ethereum, Solana</li>
+    <li>Interaction Design</li>
+    <li>Single Page Applications / PWAs</li>
+    <li>Extensible Software</li>
+    <li>SSR, Next.js, Remix, TanStack Start</li>
+    <li>Accessibility (a11y)</li>
+    <li>HTML / CSS / SVG</li>
+    <li>Browser Extension Development</li>
+  </ul>
+
+  <h2>Education</h2>
+  <div class="job">
+    <div class="job-header">
+      <h3 class="job-title">Moscow Power Engineering Institute Technical University</h3>
+      <span class="job-date">2012</span>
+    </div>
+    <p>Master of Science, Thermodynamics</p>
+  </div>
+
+</body>
+</html>
