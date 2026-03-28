@@ -88,9 +88,16 @@ export default function About() {
           >
             Zerion
           </a>
-          , where I created a crypto wallet browser extension — one of the
-          best UIs among crypto wallets. Learned a ton about extension
-          architecture and browser security, and co-authored{" "}
+          , where I created a crypto{" "}
+          <a
+            href="https://github.com/zeriontech/zerion-wallet-extension"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            wallet browser extension
+          </a>{" "}
+          — one of the best UIs among crypto wallets. Learned a ton about
+          extension architecture and browser security, and co-authored{" "}
           <a
             href="https://eips.ethereum.org/EIPS/eip-6963"
             target="_blank"
@@ -103,9 +110,9 @@ export default function About() {
 
         <p style={{ lineHeight: 1.7 }}>
           I study interaction design. Accessibility, keyboard navigation,
-          semantics, building for both casual and power users. I think a
-          lot about the right architecture for complex interfaces and
-          making the web feel like an app.
+          semantics, building for both casual and power users. I think a lot
+          about the right architecture for complex interfaces and making the web
+          feel like an app.
         </p>
 
         <Spacer height={40} />
@@ -134,7 +141,13 @@ export default function About() {
           </h2>
           <Spacer height={16} />
           <div style={{ display: "grid", gap: 12, lineHeight: 1.7 }}>
-            <div style={{ display: "grid", gridTemplateColumns: "7em 1fr", gap: 8 }}>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "7em 1fr",
+                gap: 8,
+              }}
+            >
               <span style={{ color: "var(--neutral-6)" }}>X</span>
               <a
                 href="https://twitter.com/everdimension"
@@ -144,7 +157,13 @@ export default function About() {
                 @everdimension
               </a>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "7em 1fr", gap: 8 }}>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "7em 1fr",
+                gap: 8,
+              }}
+            >
               <span style={{ color: "var(--neutral-6)" }}>GitHub</span>
               <a
                 href="https://github.com/everdimension"
@@ -154,7 +173,13 @@ export default function About() {
                 everdimension
               </a>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "7em 1fr", gap: 8 }}>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "7em 1fr",
+                gap: 8,
+              }}
+            >
               <span style={{ color: "var(--neutral-6)" }}>Talks</span>
               <div style={{ display: "flex", gap: 16 }}>
                 <a
