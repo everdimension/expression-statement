@@ -79,7 +79,7 @@ export default function Index() {
             </>
           )}
         </h1>
-        <div style={{ color: "var(--muted-foreground)" }}>{subtitle}</div>
+        <div style={{ color: "var(--muted-foreground)", textTransform: "uppercase", letterSpacing: "0.12em", fontSize: "0.75rem", fontFamily: "Inter" }}>{subtitle}</div>
       </div>
 
       <div

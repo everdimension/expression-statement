@@ -3,7 +3,7 @@
   font-size: clamp(28px, 15vw, 9.5rem);
   line-height: 0.8;
   font-weight: 900;
-  letter-spacing: -1px;
+  letter-spacing: -0.03em; /* -1px; */
 }
 
 @media (min-width: 30rem) {
