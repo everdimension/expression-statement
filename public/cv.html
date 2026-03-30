@@ -5,20 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Yaroslav Sergievskiy - CV</title>
   <style>
+    /*:root { --accent-color: #2a9d8f; }*/
+    :root { --accent-color: #2424ff; }
+
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
       line-height: 1.5;
-      color: #333;
+      color: #000;
       max-width: 850px;
       margin: 0 auto;
       padding: 40px 30px;
       font-size: 14px;
     }
-    a { color: #2a9d8f; text-decoration: none; }
+    a { color: var(--accent-color); text-decoration: none; }
     a:hover { text-decoration: underline; }
     h1 { font-size: 28px; margin-bottom: 4px; }
-    h2 { font-size: 18px; margin-top: 28px; margin-bottom: 12px; border-bottom: 2px solid #2a9d8f; padding-bottom: 4px; }
+    h2 { font-size: 18px; margin-top: 28px; margin-bottom: 12px; border-bottom: 2px solid var(--accent-color); padding-bottom: 4px; }
     h3 { font-size: 16px; margin-bottom: 4px; }
     .subtitle { color: #666; font-size: 15px; margin-bottom: 4px; }
     .email { margin-bottom: 16px; }
@@ -28,7 +31,7 @@
     .links-section strong { display: block; margin-bottom: 4px; }
     .job { margin-bottom: 24px; }
     .job-header { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; }
-    .job-title { color: #2a9d8f; font-weight: 600; }
+    .job-title { color: var(--accent-color); font-weight: 600; }
     .job-date { color: #666; font-size: 13px; }
     .job-company { font-size: 13px; color: #666; margin-bottom: 8px; }
     .job-role { font-weight: 600; margin-bottom: 8px; }
@@ -38,13 +41,14 @@
     .tech-stack { font-size: 13px; color: #555; }
     .tech-stack strong { color: #333; }
     .competencies { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 10px; }
-    .competency h4 { font-size: 13px; margin-bottom: 6px; color: #2a9d8f; }
+    .competency h4 { font-size: 13px; margin-bottom: 6px; color: var(--accent-color); }
     .competency ul { margin-left: 16px; font-size: 13px; }
     .skills-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 40px; }
     .skills-grid li { margin-bottom: 2px; }
     @media print {
       body { padding: 20px; }
-      a { color: #333; }
+      /*a { text-decoration: underline; }*/
+      a { color: #000; text-decoration: underline; }
     }
   </style>
 </head>
