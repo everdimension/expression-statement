@@ -120,7 +120,7 @@ export default function About() {
         <hr
           style={{
             border: "none",
-            borderTop: "1px solid var(--border)",
+            borderTop: "0.5px solid var(--border)",
           }}
         />
 
@@ -137,7 +137,7 @@ export default function About() {
               fontWeight: 600,
             }}
           >
-            Elsewhere
+            Links
           </h2>
           <Spacer height={16} />
           <div style={{ display: "grid", gap: 12, lineHeight: 1.7 }}>
