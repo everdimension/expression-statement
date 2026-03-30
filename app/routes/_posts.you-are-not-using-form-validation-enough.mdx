@@ -18,7 +18,7 @@ draft: true
     border: none;
   }
   .form-demo input {
-    --normal-color: var(--neutral-3);
+    --normal-color: var(--border);
     --invalid-color: #f06;
     --border-color: var(--normal-color);
     padding: 10px;
@@ -79,7 +79,7 @@ export function Example(props) {
     <div
       className="form-demo"
       style={{
-        border: "1px dashed var(--neutral-3)",
+        border: "1px dashed var(--border)",
         marginBlock: "1em",
       }}
       {...props}

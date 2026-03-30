@@ -31,5 +31,5 @@ h6,
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--tertiary-label);
+  color: var(--muted-foreground);
 }

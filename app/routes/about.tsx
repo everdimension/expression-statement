@@ -22,7 +22,7 @@ export function TwitterMedia() {
             width: 40,
             height: 40,
             borderRadius: "50%",
-            border: "2px solid var(--neutral-3)",
+            border: "2px solid var(--border)",
           }}
           src={profilePic}
           alt=""
@@ -39,7 +39,7 @@ export function TwitterMedia() {
         >
           @everdimension
         </a>
-        <div style={{ color: "var(--neutral-6)", fontSize: "0.8rem" }}>
+        <div style={{ color: "var(--muted-foreground)", fontSize: "0.8rem" }}>
           Follow me on X
         </div>
       </div>
@@ -67,7 +67,7 @@ export default function About() {
               width: 80,
               height: 80,
               borderRadius: "50%",
-              border: "3px solid var(--neutral-3)",
+              border: "3px solid var(--border)",
               flexShrink: 0,
             }}
           />
@@ -120,7 +120,7 @@ export default function About() {
         <hr
           style={{
             border: "none",
-            borderTop: "1px solid var(--neutral-3)",
+            borderTop: "1px solid var(--border)",
           }}
         />
 
@@ -133,7 +133,7 @@ export default function About() {
               fontFamily: "Inter",
               textTransform: "uppercase",
               letterSpacing: "0.12em",
-              color: "var(--neutral-5)",
+              color: "var(--muted-foreground)",
               fontWeight: 600,
             }}
           >
@@ -148,7 +148,7 @@ export default function About() {
                 gap: 8,
               }}
             >
-              <span style={{ color: "var(--neutral-6)" }}>X</span>
+              <span style={{ color: "var(--muted-foreground)" }}>X</span>
               <a
                 href="https://twitter.com/everdimension"
                 target="_blank"
@@ -164,7 +164,7 @@ export default function About() {
                 gap: 8,
               }}
             >
-              <span style={{ color: "var(--neutral-6)" }}>GitHub</span>
+              <span style={{ color: "var(--muted-foreground)" }}>GitHub</span>
               <a
                 href="https://github.com/everdimension"
                 target="_blank"
@@ -180,7 +180,7 @@ export default function About() {
                 gap: 8,
               }}
             >
-              <span style={{ color: "var(--neutral-6)" }}>Talks</span>
+              <span style={{ color: "var(--muted-foreground)" }}>Talks</span>
               <div style={{ display: "flex", gap: 16 }}>
                 <a
                   href="https://youtu.be/9S8OeCkcUSM"

@@ -17,11 +17,11 @@
 }
 
 .markdown blockquote p {
-  background: var(--surface-1);
+  background: var(--card);
   padding: 2rem;
   border-radius: 10px;
   font-weight: 400;
-  border-left: 4px solid var(--surface-2);
+  border-left: 4px solid var(--muted);
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }

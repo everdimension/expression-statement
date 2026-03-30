@@ -80,7 +80,7 @@ function Today() {
                 style={{
                   color:
                     char === "T" || char === "Z"
-                      ? "var(--neutral-5)"
+                      ? "var(--muted-foreground)"
                       : undefined,
                   transitionDelay: `${(show ? i : array.length - i) * 10}ms`,
                 }}
@@ -99,9 +99,10 @@ export function Footer() {
     <footer
       style={{
         paddingBlock: "2rem",
-        borderTop: "1px solid var(--neutral-2)",
-        fontWeight: 800,
-        fontFamily: 'Inter',
+        borderTop: "2px double var(--border)",
+        // fontWeight: 800,
+        // fontFamily: 'Inter',
+        // color: "var(--muted-foreground)",
       }}
     >
       <div style={{ float: "right" /* Yea! Challenge: guess why. */ }}>

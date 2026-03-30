@@ -37,7 +37,7 @@ code[data-theme*=" "] span {
 }
 
 :not(pre) > code {
-  background: var(--surface-2);
+  background: var(--muted);
   padding: 3px 4px;
   border-radius: 4px;
   font-size: 0.85em;

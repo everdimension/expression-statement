@@ -689,7 +689,7 @@ export function ConfirmPasswordForm() {
     border: none;
   }
   .form-demo input {
-    --normal-color: var(--neutral-3);
+    --normal-color: var(--border);
     --invalid-color: #f06;
     --border-color: var(--normal-color);
     padding: 10px;
@@ -731,10 +731,10 @@ export function ConfirmPasswordForm() {
   }
 
   .form-demo {
-    --form-demo-border-color: var(--neutral-3);
+    --form-demo-border-color: var(--border);
   }
   .form-demo:has(form.touched) {
-    --form-demo-border-color: var(--neutral-6);
+    --form-demo-border-color: var(--muted-foreground);
   }
 
   .form-demo .unstyled-button {

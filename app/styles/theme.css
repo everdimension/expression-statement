@@ -1,64 +1,48 @@
-@import "/node_modules/open-props/src/extra/theme.light.css";
-@import "/node_modules/open-props/src/extra/theme.dark.css"
-  (prefers-color-scheme: dark);
-
-/** TODO: Write all theme variables locally, do not import from open-props */
-/** Theme overrides */
 :where(html) {
-  --black: var(--system-text-12);
-  --white: var(--system-text-0);
-  --always-black: var(--black);
-  --always-white: var(--white);
+  /* Backgrounds & Surfaces */
+  --background-hsl: 40 23% 95%;
+  /*--background-hsl: 0 0% 100%;*/
+  --card-hsl: 40 20% 91%;
+  --muted-hsl: 40 12% 88%;
+  --secondary-hsl: 40 15% 86%;
 
+  /* Foregrounds & Text */
+  /*--foreground-hsl: 220 15% 10%;*/
+  --foreground-hsl: 0 0% 0%;
+  --muted-foreground-hsl: 220 10% 42%;
+
+  /* Borders */
+  --border-hsl: 220 10% 78%;
+
+  /* Resolved colors */
+  --background: hsl(var(--background-hsl));
+  --card: hsl(var(--card-hsl));
+  --muted: hsl(var(--muted-hsl));
+  --secondary: hsl(var(--secondary-hsl));
+  --foreground: hsl(var(--foreground-hsl));
+  --muted-foreground: hsl(var(--muted-foreground-hsl));
+  --border: hsl(var(--border-hsl));
+
+  /* Links */
   --link: var(--indigo-6);
   --link-visited: var(--violet-5);
   --link-hover: var(--indigo-5);
-
-  --neutral-0: var(--gray-0);
-  --neutral-1: var(--gray-1);
-  --neutral-2: var(--gray-2);
-  --neutral-3: var(--gray-3);
-  --neutral-4: var(--gray-4);
-  --neutral-5: var(--gray-5);
-  --neutral-6: var(--gray-6);
-  --neutral-7: var(--gray-7);
-  --neutral-8: var(--gray-8);
-  --neutral-9: var(--gray-9);
-
-  --surface-1: var(--neutral-1);
-  --surface-2: var(--neutral-2);
-  --surface-3: var(--neutral-3);
-  --surface-4: var(--neutral-4);
-
-  --label: CanvasText;
-  --secondary-label: var(--neutral-6);
-  --tertiary-label: var(--neutral-5);
-  --separator: var(--neutral-3);
 }
 
 @media (prefers-color-scheme: dark) {
   :where(html) {
-    --always-black: var(--system-text-0);
-    --always-white: var(--system-text-12);
+    --background-hsl: 220 15% 10%;
+    --card-hsl: 220 15% 13%;
+    --muted-hsl: 220 12% 17%;
+    --secondary-hsl: 220 15% 15%;
 
-  --link: var(--indigo-5);
-  --link-hover: var(--indigo-4);
+    --foreground-hsl: 40 20% 90%;
+    --muted-foreground-hsl: 220 10% 60%;
+
+    --border-hsl: 220 10% 22%;
+
+    --link: var(--indigo-5);
+    --link-hover: var(--indigo-4);
     --link-visited: var(--violet-4);
-
-    --neutral-0: var(--gray-11);
-    --neutral-1: var(--gray-10);
-    --neutral-2: var(--gray-9);
-    --neutral-3: var(--gray-8);
-    --neutral-4: var(--gray-7);
-    --neutral-5: var(--gray-6);
-    --neutral-6: var(--gray-5);
-    --neutral-7: var(--gray-4);
-    --neutral-8: var(--gray-3);
-    --neutral-9: var(--gray-2);
-
-    --surface-1: var(--neutral-2);
-    --surface-2: var(--neutral-3);
-    --surface-3: var(--neutral-4);
-    --surface-4: var(--neutral-5);
   }
 }

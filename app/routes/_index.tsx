@@ -9,6 +9,7 @@ import { Layout } from "~/components/Layout";
 import s from "../styles/styles.module.css";
 import mainPagePreviewSrc from "./social-preview/pre-built/main-page-preview.png";
 import { getAllPosts } from "./_posts/shared/getAllPosts";
+import React from "react";
 
 // const subtitle = 'Software, UX Design and the Web platform'
 export const subtitle = "Software, UX Design and the Web";
@@ -78,7 +79,7 @@ export default function Index() {
             </>
           )}
         </h1>
-        <div style={{ color: "var(--neutral-5)" }}>{subtitle}</div>
+        <div style={{ color: "var(--muted-foreground)" }}>{subtitle}</div>
       </div>
 
       <div
@@ -97,26 +98,44 @@ export default function Index() {
       </div>
 
       <main>
-        <div style={{ display: "grid", gap: 96 }}>
-          {posts.map((post) => (
-            <article key={post.slug} style={{ display: "grid", gap: 12 }}>
-              <Link
-                to={post.slug}
-                className="link-heading no-underline hover:underline"
+        <div style={{ display: "grid", gap: 48 }}>
+          {posts.map((post, index) => (
+            <React.Fragment key={index}>
+              <article
+                key={post.slug}
+                style={{
+                  display: "grid",
+                  gap: 24,
+                  gridTemplateColumns: "7rem auto",
+                  alignItems: "baseline",
+                  // paddingBlock: 36,
+                  // borderTop: index > 0 ? "1px solid var(--border)" : undefined,
+                  // borderBottom: "1px solid var(--border)",
+                }}
               >
-                <h2>{post.frontmatter.title}</h2>
-              </Link>
-              <p style={{ margin: 0 }}>
-                {post.frontmatter.description || post.excerpt}
-              </p>
-              <time className="meta-date">
-                {new Intl.DateTimeFormat("en", {
-                  month: "short",
-                  day: "numeric",
-                  year: "numeric",
-                }).format(new Date(post.date || Date.now()))}
-              </time>
-            </article>
+                <time className="meta-date">
+                  {new Intl.DateTimeFormat("en-CA", {
+                    // month: "short",
+                    // day: "numeric",
+                    // year: "numeric",
+                  }).format(new Date(post.date || Date.now()))}
+                </time>
+                <div style={{ display: "grid", gap: 12 }}>
+                  <Link
+                    to={post.slug}
+                    className="link-heading no-underline hover:underline"
+                  >
+                    <h2>{post.frontmatter.title}</h2>
+                  </Link>
+                  <p style={{ margin: 0 }}>
+                    {post.frontmatter.description || post.excerpt}
+                  </p>
+                </div>
+              </article>
+              <div
+                style={{ height: 0, borderTop: "0.5px solid var(--border)" }}
+              />
+            </React.Fragment>
           ))}
           <details>
             <summary>More Posts</summary>
