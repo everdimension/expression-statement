@@ -198,6 +198,22 @@ export default function About() {
                 </a>
               </div>
             </div>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "7em 1fr",
+                gap: 8,
+              }}
+            >
+              <span style={{ color: "var(--muted-foreground)" }}>CV</span>
+              <a
+                href="/cv"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {'/cv'}
+              </a>
+            </div>
           </div>
         </section>
       </main>
